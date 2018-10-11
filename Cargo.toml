@@ -1,0 +1,19 @@
+[package]
+name = "web-scipara-demo"
+version = "0.1.0"
+authors = ["Deyan Ginev <deyan.ginev@gmail.com>"]
+
+[dependencies.rocket_contrib]
+default-features = false
+version = "*"
+features = ["json", "tera_templates"]
+
+[dependencies.llamapun]
+git = "https://github.com/KWARC/llamapun"
+
+[dependencies]
+rocket = "*"
+rocket_codegen = "*"
+serde = "*"
+serde_derive = "*"
+serde_json = "*"
