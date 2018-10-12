@@ -3,9 +3,12 @@
 
 #[macro_use]
 extern crate serde_derive;
+extern crate hyper;
+extern crate hyper_tls;
 extern crate rocket;
 extern crate rocket_contrib;
 extern crate serde_json;
+extern crate tokio_core;
 
 use std::collections::HashMap;
 use std::fs::File;
@@ -13,6 +16,13 @@ use std::io::Cursor;
 use std::io::Read;
 use std::path::{Path, PathBuf};
 use std::str;
+
+use hyper::header::{HeaderValue, CONTENT_LENGTH, CONTENT_TYPE};
+use hyper::rt::{Future, Stream};
+use hyper::{Body, Method};
+use hyper::{Client, Request};
+use hyper_tls::HttpsConnector;
+use tokio_core::reactor::Core;
 
 use rocket::fairing::{Fairing, Info, Kind};
 use rocket::http::Header;
@@ -116,10 +126,59 @@ struct LatexmlRequest {
   preload: Vec<String>,
 }
 
+fn latexml_call(params: Json<LatexmlRequest>) -> content::Json<String> {
+  let json_str = format!("{:?}", params);
+  let json_str_len = json_str.len();
+  let mut core = Core::new().unwrap();
+  let handle = core.handle();
+
+  let client = Client::builder()
+    .build::<_, hyper::Body>(HttpsConnector::new(4).expect("TLS initialization failed"));
+  // .build(&handle);
+
+  let url_with_query: hyper::Uri = "https://latexml.mathweb.org/convert"
+    .to_string()
+    .parse()
+    .unwrap();
+
+  let mut req = Request::builder()
+    .uri(url_with_query)
+    .method(Method::POST)
+    .body(Body::from(json_str))
+    .unwrap();
+
+  req
+    .headers_mut()
+    .insert(CONTENT_TYPE, HeaderValue::from_static("application/json"));
+  req.headers_mut().insert(
+    CONTENT_LENGTH,
+    HeaderValue::from_str(&json_str_len.to_string()).unwrap(),
+  );
+
+  let post = client
+    .request(req)
+    .and_then(|res| res.into_body().concat2());
+  let posted = match core.run(post) {
+    Ok(posted_data) => match str::from_utf8(&posted_data) {
+      Ok(posted_str) => posted_str.to_string(),
+      Err(e) => {
+        println!("err: {}", e);
+        return content::Json("{ 'status': 'Fatal error in remote latexml request.' }".to_string());
+      },
+    },
+    Err(e) => {
+      println!("err: {}", e);
+      return content::Json("{ 'status': 'Fatal error in remote latexml request.' }".to_string());
+    },
+  };
+
+  content::Json(posted)
+}
+
 #[post("/convert", format = "application/json", data = "<req>")]
-fn convert(req: Json<LatexmlRequest>) -> content::Json<&'static str> {
+fn convert(req: Json<LatexmlRequest>) -> content::Json<String> {
   println!("req: {:?}", req);
-  content::Json("{ 'status': 'No obvious problems.' }")
+  latexml_call(req)
 }
 
 fn rocket() -> rocket::Rocket {
