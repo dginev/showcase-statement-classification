@@ -1,8 +1,8 @@
 {% extends "layout" %} {% block content %}
 <div class="col-md-2">
-  <div id="message"></div>
 </div>
 <div class="col-md-8">
+
   <div class="center">
     <h1 class="welcome-title">
       Scientific Paragraph Classification
@@ -14,14 +14,25 @@
 
   <div class="form-group">
     <label for="exampleFormControlTextarea3">Type or paste the LaTeX code for a paragraph in a scientific article</label>
-    <textarea class="form-control" id="ace-editor" rows="7"></textarea>
+    <textarea class="form-control" id="editor" rows="7"></textarea>
+    <span id="counter">&nbsp;</span>
+  </div>
+
+  <div style="background-color: #FFFFFF; display: none;
+                word-wrap:break-word; margin: 5px;" id="onthefly"></div>
+
+  <div style="display:none">
+    <div id="source"></div>
   </div>
 
 </div>
-<div class="col-md-2"></div>
-<div class="classification">
-  <!-- fill in with classification probabilities -->
-</div>
+<div class="col-md-2">
+
+  <div id="message"></div>
+  <div id="log" style="background-color: #ffddbb; display: none; word-wrap:break-word; margin: 5px;"></div>
+  <div class="classification">
+    <!-- fill in with classification probabilities -->
+  </div>
 </div>
 
 <script src='/public/js/external/ace-min/ace.js'></script>

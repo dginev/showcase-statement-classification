@@ -1,4 +1,3 @@
-var editor = ace.edit("ace-editor");
 var examples = load_examples();
 
 function show_log() {
@@ -120,7 +119,7 @@ function do_convert_on_the_fly(e) {
     if (timeout)
       clearTimeout(timeout);
     ac_counter--;
-    var tex = editor.getValue();
+    var tex = $("#editor").val();
     if (!tex) {
       ac_counter = 0;
       $('#onthefly').html(' ');
@@ -140,18 +139,15 @@ function editor_conversion_start() {
 }
 
 function example_select_handler() {
-
   option = $('#example_select option:selected').first();
   var example_requested = option && option.attr("value");
 
   if (example_requested) {
     $('#onthefly').html('');
-    editor.setValue(examples[example_requested]);
-    editor.clearSelection();
+    $("#editor").val(examples[example_requested]);
   }
 }
 
-$('#example_select').change(example_select_handler);
 
 $('#ltxstyle_select').change(function () {
   var stylename = "";
@@ -172,36 +168,14 @@ $('#ltxstyle_select').change(function () {
   }
 });
 
-editor.setTheme("ace/theme/textmate");
-editor
-  .getSession()
-  .setMode("ace/mode/latex");
-editor
-  .getSession()
-  .setUseWrapMode(true);
 var tex_requested = $.urlParam('tex');
-var example_requested = $.urlParam('demo');
 if (tex_requested) {
-  editor.setValue(decodeURIComponent(tex_requested));
-} else if (example_requested) {
-  example_requested = decodeURIComponent(example_requested);
-  example_option = $('#example_select')
-    .find('option[value="' + example_requested + '"]')
-    .first()
-  if (example_option.length == 0) {
-    example_option = $('#example_select')
-      .find('option:contains("' + example_requested + '")')
-      .first();
-  }
-  if (example_option.length > 0) {
-    example_option.attr("selected", "selected");
-    example_select_handler();
-  }
+  $("#editor").val(decodeURIComponent(tex_requested));
 } else {
-  editor.setValue("Wirte your LaTeX snippet...\n   ...or pick an example from the lower left menu.");
+  $("#editor").val("Write a LaTeX paragraph here. Let $e=mc^2$ be a preliminary for the following ...");
 }
-editor.clearSelection();
-editor.on('change', function () {
+
+$("#editor").on('change', function () {
   editor_conversion_start();
 });
 editor_conversion_start();

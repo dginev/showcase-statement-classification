@@ -8,12 +8,11 @@ extern crate hyper_tls;
 extern crate rocket;
 extern crate rocket_contrib;
 extern crate serde_json;
+extern crate url;
 extern crate tokio_core;
 
 use std::collections::HashMap;
-use std::fs::File;
 use std::io::Cursor;
-use std::io::Read;
 use std::path::{Path, PathBuf};
 use std::str;
 
@@ -21,14 +20,15 @@ use hyper::header::{HeaderValue, CONTENT_LENGTH, CONTENT_TYPE};
 use hyper::rt::{Future, Stream};
 use hyper::{Body, Method};
 use hyper::{Client, Request};
+use hyper::client::{HttpConnector};
 use hyper_tls::HttpsConnector;
 use tokio_core::reactor::Core;
 
 use rocket::fairing::{Fairing, Info, Kind};
 use rocket::http::Header;
 use rocket::response::content;
-use rocket::response::status::{Accepted, NotFound};
-use rocket::response::{NamedFile, Redirect};
+use rocket::response::status::{NotFound};
+use rocket::response::{NamedFile};
 
 use rocket_contrib::{Json, Template};
 
@@ -126,60 +126,94 @@ struct LatexmlRequest {
   preload: Vec<String>,
 }
 
+impl LatexmlRequest {
+  fn to_query(&self) -> String {
+    let mut query = format!("tex={}&preamble={}&comments={}&post={}&timeout={}&format={}&whatsin={}&whatsout={}&pmml={}&cmml={}&mathtex={}&mathlex={}&nodefaultresources={}",
+      uri_esc(&self.tex), uri_esc(&self.preamble), uri_esc(&self.comments), 
+      uri_esc(&self.post), uri_esc(&self.timeout), uri_esc(&self.format),
+       uri_esc(&self.whatsin), uri_esc(&self.whatsout), uri_esc(&self.pmml), 
+       uri_esc(&self.cmml), uri_esc(&self.mathtex), uri_esc(&self.mathlex), uri_esc(&self.nodefaultresources));
+    for p in self.preload.iter() {
+      query.push('&');
+      query.push_str("preload=");
+      query.push_str(&uri_esc(&p));
+    }
+    query
+  }
+}
+
+fn uri_esc(param: &str) -> String {
+  let mut param_encoded: String =
+    url::percent_encoding::utf8_percent_encode(param, url::percent_encoding::DEFAULT_ENCODE_SET)
+      .collect::<String>();
+  // TODO: This could/should be done faster by using lazy_static!
+  for &(original, replacement) in &[
+    (":", "%3A"),
+    ("/", "%2F"),
+    ("\\", "%5C"),
+    ("$", "%24"),
+    (".", "%2E"),
+    ("!", "%21"),
+    ("@", "%40"),
+  ] {
+    param_encoded = param_encoded.replace(original, replacement);
+  }
+  // if param_pure != param_encoded {
+  //   println!("Encoded {} to {:?}", param_pure, param_encoded);
+  // } else {
+  //   println!("No encoding needed: {:?}", param_pure);
+  // }
+  param_encoded
+}
+
 fn latexml_call(params: Json<LatexmlRequest>) -> content::Json<String> {
-  let json_str = format!("{:?}", params);
-  let json_str_len = json_str.len();
-  let mut core = Core::new().unwrap();
-  let handle = core.handle();
+  let payload = params.into_inner().to_query();
+  let payload_len = payload.len();
 
-  let client = Client::builder()
+  let client : Client<HttpsConnector<HttpConnector>> = Client::builder()
     .build::<_, hyper::Body>(HttpsConnector::new(4).expect("TLS initialization failed"));
-  // .build(&handle);
 
-  let url_with_query: hyper::Uri = "https://latexml.mathweb.org/convert"
-    .to_string()
-    .parse()
-    .unwrap();
+  let url: hyper::Uri = "https://latexml.mathweb.org/convert".parse().unwrap();
 
   let mut req = Request::builder()
-    .uri(url_with_query)
+    .uri(url)
     .method(Method::POST)
-    .body(Body::from(json_str))
+    .body(Body::from(payload))
     .unwrap();
 
   req
     .headers_mut()
-    .insert(CONTENT_TYPE, HeaderValue::from_static("application/json"));
+    .insert(CONTENT_TYPE, HeaderValue::from_static("application/x-www-form-urlencoded"));
   req.headers_mut().insert(
     CONTENT_LENGTH,
-    HeaderValue::from_str(&json_str_len.to_string()).unwrap(),
+    HeaderValue::from_str(&payload_len.to_string()).unwrap(),
   );
 
-  let post = client
-    .request(req)
-    .and_then(|res| res.into_body().concat2());
-  let posted = match core.run(post) {
-    Ok(posted_data) => match str::from_utf8(&posted_data) {
-      Ok(posted_str) => posted_str.to_string(),
-      Err(e) => {
-        println!("err: {}", e);
-        return content::Json("{ 'status': 'Fatal error in remote latexml request.' }".to_string());
-      },
-    },
-    Err(e) => {
-      println!("err: {}", e);
-      return content::Json("{ 'status': 'Fatal error in remote latexml request.' }".to_string());
-    },
-  };
+  let mut res_data : Vec<u8> = Vec::new();
+  let mut core = Core::new().unwrap();
+  {
+    let work = client.request(req).and_then(|res| {
+      println!("Response: {}", res.status());
+      println!("Headers: {:#?}", res.headers());
+      println!("Body: {:?}", res);
 
-  content::Json(posted)
+      // The body is a stream, and for_each returns a new Future
+      // when the stream is finished, and calls the closure on
+      // each chunk of the body...
+      res.into_body().for_each(|chunk| {
+        res_data.extend_from_slice(&*chunk.into_bytes());
+        Ok(())
+      })
+    });
+    core.run(work).unwrap();
+  }
+  let res_string = String::from(str::from_utf8(res_data.as_slice()).unwrap_or(""));
+  println!("body: {:?}", res_string);
+  content::Json(res_string)
 }
 
 #[post("/convert", format = "application/json", data = "<req>")]
-fn convert(req: Json<LatexmlRequest>) -> content::Json<String> {
-  println!("req: {:?}", req);
-  latexml_call(req)
-}
+fn convert(req: Json<LatexmlRequest>) -> content::Json<String> { latexml_call(req) }
 
 fn rocket() -> rocket::Rocket {
   rocket::ignite()
