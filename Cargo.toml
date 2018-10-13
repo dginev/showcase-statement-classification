@@ -11,6 +11,14 @@ features = ["json", "tera_templates"]
 [dependencies.llamapun]
 git = "https://github.com/KWARC/llamapun"
 
+[dependencies.tensorflow]
+git = "https://github.com/tensorflow/rust"
+
+[dependencies.tensorflow-sys]
+git = "https://github.com/tensorflow/rust"
+features = ["tensorflow_gpu"]
+
+
 [dependencies]
 rocket = "*"
 rocket_codegen = "*"
@@ -21,3 +29,6 @@ hyper = "*"
 hyper-tls = "*"
 tokio-core = "*"
 url  = "*"
+libxml = "*"
+lazy_static = "*"
+regex = "*"
