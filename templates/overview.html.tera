@@ -1,37 +1,48 @@
 {% extends "layout" %} {% block content %}
-<div class="col-md-2">
+<div class="row">
+  <div class="col-md-3">
+  </div>
+  <div class="col-md-6">
+
+    <div class="center">
+      <h1 class="welcome-title">
+        Scientific Paragraph Classification<br>
+        <h2 class="welcome-subtitle">A minimal demonstration for automatic classification of scientific paragraphs via
+          latexml, llamapun and tensorflow</h2>
+        <br>
+    </div>
+  </div>
+  <div class="col-md-3">
+  </div>
 </div>
-<div class="col-md-8">
 
-  <div class="center">
-    <h1 class="welcome-title">
-      Scientific Paragraph Classification
-      <div class="row"></div>
-      <h2 class="welcome-subtitle">A minimal demonstration for automatic classification of scientific paragraphs via
-        latexml, llamapun and tensorflow</h2>
-      <br>
+<div class="row">
+  <div class="col-md-3">
+    <div id="benchmark"></div>
+    <div id="classification"></div>
   </div>
+  <div class="col-md-6">
+    <div class="form-group">
+      <label for="exampleFormControlTextarea3">Type or paste the LaTeX code for a paragraph in a scientific article</label>
+      <textarea class="form-control" id="editor" rows="7"></textarea>
+      <span id="counter">&nbsp;</span>
+    </div>
 
-  <div class="form-group">
-    <label for="exampleFormControlTextarea3">Type or paste the LaTeX code for a paragraph in a scientific article</label>
-    <textarea class="form-control" id="editor" rows="7"></textarea>
-    <span id="counter">&nbsp;</span>
-  </div>
-
-  <div style="background-color: #FFFFFF; display: none;
+    <div style="background-color: #FFFFFF; display: none;
                 word-wrap:break-word; margin: 5px;" id="onthefly"></div>
 
-  <div style="display:none">
-    <div id="source"></div>
+    <div style="display:none">
+      <div id="source"></div>
+    </div>
+
   </div>
+  <div class="col-md-3">
 
-</div>
-<div class="col-md-2">
-
-  <div id="message"></div>
-  <div id="log" style="background-color: #ffddbb; display: none; word-wrap:break-word; margin: 5px;"></div>
-  <div class="classification">
-    <!-- fill in with classification probabilities -->
+    <div id="message"></div>
+    <div id="log" style="background-color: #ffddbb; display: none; word-wrap:break-word; margin: 5px;"></div>
+    <div class="classification">
+      <!-- fill in with classification probabilities -->
+    </div>
   </div>
 </div>
 

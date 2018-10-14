@@ -1,4 +1,5 @@
 #![feature(plugin)]
+#![feature(duration_as_u128)] 
 #![plugin(rocket_codegen)]
 
 #[macro_use]
@@ -23,6 +24,8 @@ use std::io::Cursor;
 use std::path::{Path, PathBuf};
 use std::str;
 use std::sync::Mutex;
+use std::time::Instant;
+
 // use std::cell::RefCell;
 use std::error::Error;
 use std::fs::File;
@@ -57,6 +60,7 @@ use rocket_contrib::{Json, Template};
 // We need a singleton Corpus object to hold the various expensive state objects
 static MAX_WORD_LENGTH : usize = 25;
 static PARAGRAPH_SIZE : usize = 480;
+static INDEX_FROM : f32 = 2.0; // arxiv.py preprocessing offsets all indexes with 2, e.g. NUM 1 --> 3
 
 lazy_static! {
   static ref IS_NUMERIC : Regex = Regex::new(r"^-?(?:\d+)(?:[a-k]|(?:\.\d+(?:[eE][+-]?\d+)?))?$").unwrap();
@@ -65,14 +69,18 @@ lazy_static! {
     let dictionary: HashMap<String, u64> = serde_json::from_reader(json_file).expect("error while reading json");
     Mutex::new(dictionary)
   };
-  // static ref MODEL: RefCell<Session> = { 
-  //   let mut graph = Graph::new();
-  //   let session = Session::from_saved_model(&SessionOptions::new(), 
-  //                                               &["serve"],
-  //                                               &mut graph,
-  //                                               "model.h5").unwrap();
-  //   RefCell::new(session)
-  // };
+  static ref TF_GRAPH : Graph = {
+    // Load the computation graph defined by regression.py.
+    let filename = "model.pb";
+    println!("loading TF model...");
+    let mut graph = Graph::new();
+    let mut proto = Vec::new();
+    File::open(filename).unwrap().read_to_end(&mut proto).unwrap();
+    println!("read in graph data...");
+    graph.import_graph_def(&proto, &ImportGraphDefOptions::new()).unwrap();
+    println!("Graph imported");
+    graph
+  };
 }
 
 
@@ -299,7 +307,7 @@ fn llamapun_text_indexes(xml: &str) -> Vec<f32> {
                 // if word is in the dictionary, record its index
                 if let Some(idx) = DICTIONARY.lock().unwrap().get(lexeme) {
                   // println!("{}: {}", lexeme, idx);
-                  words.push(*idx as f32);
+                  words.push(INDEX_FROM+(*idx as f32));
                 }
               }
             }
@@ -314,7 +322,7 @@ fn llamapun_text_indexes(xml: &str) -> Vec<f32> {
             // if word is in the dictionary, record its index
             if let Some(idx) = DICTIONARY.lock().unwrap().get(word_str) {
               // println!("{}: {}", word_str, idx);
-              words.push(*idx as f32);
+              words.push(INDEX_FROM+(*idx as f32));
             }
           }
         }
@@ -326,7 +334,48 @@ fn llamapun_text_indexes(xml: &str) -> Vec<f32> {
   words
 }
 
-fn classify(mut indexes: Vec<f32>) -> Result<(),Box<Error>> {
+#[derive(Debug, Serialize)]
+struct Classification {
+  acknowledgement: f32,
+  algorithm: f32,
+  caption: f32,
+  proof: f32,
+  definition: f32, 
+  problem: f32, 
+  other: f32,
+}
+
+impl From<Tensor<f32>> for Classification {
+  fn from(t: Tensor<f32>) -> Classification {
+    Classification {
+      acknowledgement: t[0],
+      algorithm: t[1],
+      caption: t[2],
+      proof: t[3],
+      definition: t[4],
+      problem: t[5],
+      other: t[6]
+    }
+  }
+}
+
+#[derive(Debug, Serialize)]
+struct Benchmark {
+  latexml: u128,
+  llamapun: u128,
+  tensorflow: u128,
+  request: u128,
+}
+
+#[derive(Debug, Serialize)]
+struct ClassificationResponse {
+  latexml: Option<LatexmlResponse>,
+  classification: Option<Classification>,
+  benchmark: Benchmark,
+}
+
+
+fn classify(mut indexes: Vec<f32>) -> Result<Classification,Box<Error>> {
   indexes.truncate(PARAGRAPH_SIZE);
   let padding = PARAGRAPH_SIZE - indexes.len();
   if padding > 0 {
@@ -335,24 +384,15 @@ fn classify(mut indexes: Vec<f32>) -> Result<(),Box<Error>> {
     }
   }
   
-  // Load the computation graph defined by regression.py.
-  let filename = "model.pb";
-  println!("loading TF model...");
-  let mut graph = Graph::new();
-  let mut proto = Vec::new();
-  File::open(filename)?.read_to_end(&mut proto)?;
-  println!("read in graph data...");
-  graph.import_graph_def(&proto, &ImportGraphDefOptions::new())?;
-  println!("Graph imported");
-  let mut session = Session::new(&SessionOptions::new(), &graph)?;
+  let mut session = Session::new(&SessionOptions::new(), &TF_GRAPH)?;
   println!("Session created");
 
   // Grab the data out of the session.
   let input_tensor = Tensor::new(&[1,480]).with_values(indexes.as_slice())?;
   let mut output_step = SessionRunArgs::new();
 
-  let op_embed = graph.operation_by_name_required("embedding_1_input")?;
-  let op_softmax = graph.operation_by_name_required("dense_1/Softmax")?;
+  let op_embed = TF_GRAPH.operation_by_name_required("embedding_1_input")?;
+  let op_softmax = TF_GRAPH.operation_by_name_required("dense_1/Softmax")?;
   output_step.add_feed(&op_embed, 0, &input_tensor);
   println!("feed added.");
 
@@ -364,39 +404,54 @@ fn classify(mut indexes: Vec<f32>) -> Result<(),Box<Error>> {
   println!("session run completed. Obtaining prediction.");
   // Check our results.
   let prediction : Tensor<f32>  = output_step.fetch(softmax_fetch_token)?;
-  println!("prediction: {:?}", prediction);
-  for p in prediction.iter() {
-    println!("val: {:?}", p);
-  }
-
-  Ok(())
+  
+  Ok(prediction.into())
 }
 
-#[post("/convert", format = "application/json", data = "<req>")]
-fn convert(req: Json<LatexmlRequest>) -> content::Json<String> { 
+#[post("/process", format = "application/json", data = "<req>")]
+fn process(req: Json<LatexmlRequest>) -> content::Json<String> { 
+  let start = Instant::now();
   // 1. obtain HTML5 via latexml
-  let latexml_response = latexml_call(req);
-  // 2. obtain word indexes of the first paragraph, via llamapun
-  let word_indexes = llamapun_text_indexes(&latexml_response.result);
-  // 3. obtain classification prediction via tensorflow
-  match classify(word_indexes) {
-  Ok(prediction) => println!("ok prediction: {:?}", prediction),
-   Err(e) => println!("error! {:?}", e)
+  let mut res = ClassificationResponse {
+    latexml: None,
+    benchmark: Benchmark { latexml: 0, llamapun: 0, tensorflow: 0, request: 0},
+    classification: Some(Classification {
+      acknowledgement: 0.0000000013124934, algorithm: 0.0013627012, caption: 0.0000017457692, proof: 0.04190522, definition: 0.6945271, problem: 0.00066849875, other: 0.26153472
+    }),
   };
+  let latexml_start = Instant::now();
+  let latexml_response = latexml_call(req);
+  res.benchmark.latexml = latexml_start.elapsed().as_millis();
+  // 2. obtain word indexes of the first paragraph, via llamapun
+  let llamapun_start = Instant::now();
+  let word_indexes = llamapun_text_indexes(&latexml_response.result);
+  res.latexml = Some(latexml_response);
+  res.benchmark.llamapun = llamapun_start.elapsed().as_millis();
+  // 3. obtain classification prediction via tensorflow
+  let tensorflow_start = Instant::now();
+  if let Ok(prediction) = classify(word_indexes) { 
+    res.classification = Some(prediction);
+  }
+  res.benchmark.tensorflow = tensorflow_start.elapsed().as_millis();
+  res.benchmark.request = start.elapsed().as_millis();
   // 4. package and respond
-  // content::Json(serde_json::serialize());
-  content::Json(serde_json::to_string(&latexml_response).unwrap())
+  content::Json(serde_json::to_string(&res).unwrap())
 }
 
 fn rocket() -> rocket::Rocket {
   rocket::ignite()
-    .mount("/", routes![root, favicon, files, convert])
+    .mount("/", routes![root, favicon, files, process])
     .attach(Template::fairing())
     .attach(CORS())
 }
 
 fn main() {
-  // preload static
+ // // preload static
+  println!("-- loading word dictionary");
   assert_eq!(DICTIONARY.lock().unwrap().get("NUM"), Some(&1));
+
+  // println!("-- instantiating TensorFlow graph");
+  assert!(TF_GRAPH.graph_def().is_ok());
+
   rocket().launch(); 
 }

@@ -14,8 +14,13 @@ function show_result() {
       .Typeset();
   }
 }
+function precise(x) {
+  return Number.parseFloat(x).toPrecision(2);
+}
+
+
 function setup_message(data) {
-  $('#message').html($('#message').text(data.status).html().replace(/\n/g, "<br />") + "<a href='#'>(Details)</a>");
+  $('#message').html($('#message').text(data.latexml.status).html().replace(/\n/g, "<br />") + "<a href='#'>(Details)</a>");
   $('#message').hover(function () {
     show_log();
   }, function () {
@@ -28,7 +33,46 @@ function setup_message(data) {
     show_log();
   });
   $('#log').hide();
-  $('#log').html($('#log').text(data.log).html().replace(/\n/g, "<br />"));
+  $('#log').html($('#log').text(data.latexml.log).html().replace(/\n/g, "<br />"));
+  var benchmark = "<table class='benchmark table table-striped'><thead><tr><th>stage</th><th>seconds</th></tr></thead><tbody>";
+  for (var key in data.benchmark) {
+    benchmark += "<tr><td>" + key + "</td><td>" + precise(data.benchmark[key] / 1000.0) + "</td></tr>";
+  }
+  benchmark += "</tbody></table>";
+  $('#benchmark').html(benchmark);
+
+
+  var classes = Object.keys(data.classification);
+  classes.sort();
+  console.log(classes);
+  console.log(data.classification);
+
+  var max_key;
+  var max_val = -1;
+  // grab the maximum key name
+  $.each(classes, function (idx, key) {
+    var val = data.classification[key];
+    if (val > max_val) {
+      max_val = val;
+      max_key = key;
+    }
+  });
+  // typeset table, highlight max row
+  var classification = "<table class='classification table table-striped'><thead><tr><th>class</th><th>likelihood</th></tr></thead><tbody>";
+  $.each(classes, function (idx, key) {
+    if (max_key == key) {
+      tr = '<tr class="success">';
+    } else {
+      tr = '<tr>';
+    }
+    var val = data.classification[key];
+    if (val < 0.001) {
+      val = 0.0;
+    }
+    classification += tr + "<td>" + key + "</td><td>" + precise(val) + "</td></tr>";
+  });
+  classification += "</tbody></table>";
+  $('#classification').html(classification);
 }
 
 $.urlParam = function (name) {
@@ -52,6 +96,8 @@ var sendRequest = function (tex, my_counter, onthefly) {
     $('#log').html('');
     $('#previewtext').html('Converting...');
     $('#message').html('Converting...');
+    $('#benchmark').html('');
+    $('#classification').html('');
     $("body").css("cursor", "progress");
     if (ac_counter == 1)
       send_called = 0;
@@ -66,7 +112,7 @@ var sendRequest = function (tex, my_counter, onthefly) {
     }
     $.ajax({
       type: "POST",
-      url: "/convert",
+      url: "/process",
       contentType: 'application/json',
       data: JSON.stringify({ // excplicitly unroll the fragment-html profile, as we want to add the math lexemes output on top
         "tex": tex || "",
@@ -88,9 +134,9 @@ var sendRequest = function (tex, my_counter, onthefly) {
       console.log("success: ", data);
       setup_message(data);
       if (onthefly) {
-        if (!hasFatal.test(data.status)) {
-          if ((data.result != '') && (my_counter <= ac_counter)) {
-            $('#onthefly').html(data.result);
+        if (!hasFatal.test(data.latexml.status)) {
+          if ((data.latexml.result != '') && (my_counter <= ac_counter)) {
+            $('#onthefly').html(data.latexml.result);
             show_result();
           }
         } else {
