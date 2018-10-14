@@ -72,13 +72,13 @@ lazy_static! {
   static ref TF_GRAPH : Graph = {
     // Load the computation graph defined by regression.py.
     let filename = "model.pb";
-    println!("loading TF model...");
+    println!("-- loading TF model");
     let mut graph = Graph::new();
     let mut proto = Vec::new();
     File::open(filename).unwrap().read_to_end(&mut proto).unwrap();
-    println!("read in graph data...");
+    println!("-- reading in graph data");
     graph.import_graph_def(&proto, &ImportGraphDefOptions::new()).unwrap();
-    println!("Graph imported");
+    println!("-- graph imported");
     graph
   };
 }
@@ -364,7 +364,7 @@ struct Benchmark {
   latexml: u128,
   llamapun: u128,
   tensorflow: u128,
-  request: u128,
+  total: u128,
 }
 
 #[derive(Debug, Serialize)]
@@ -414,7 +414,7 @@ fn process(req: Json<LatexmlRequest>) -> content::Json<String> {
   // 1. obtain HTML5 via latexml
   let mut res = ClassificationResponse {
     latexml: None,
-    benchmark: Benchmark { latexml: 0, llamapun: 0, tensorflow: 0, request: 0},
+    benchmark: Benchmark { latexml: 0, llamapun: 0, tensorflow: 0, total: 0},
     classification: Some(Classification {
       acknowledgement: 0.0000000013124934, algorithm: 0.0013627012, caption: 0.0000017457692, proof: 0.04190522, definition: 0.6945271, problem: 0.00066849875, other: 0.26153472
     }),
@@ -433,7 +433,7 @@ fn process(req: Json<LatexmlRequest>) -> content::Json<String> {
     res.classification = Some(prediction);
   }
   res.benchmark.tensorflow = tensorflow_start.elapsed().as_millis();
-  res.benchmark.request = start.elapsed().as_millis();
+  res.benchmark.total = start.elapsed().as_millis();
   // 4. package and respond
   content::Json(serde_json::to_string(&res).unwrap())
 }
@@ -446,12 +446,17 @@ fn rocket() -> rocket::Rocket {
 }
 
 fn main() {
- // // preload static
+  // preload global statics
+  let preload = Instant::now();
   println!("-- loading word dictionary");
   assert_eq!(DICTIONARY.lock().unwrap().get("NUM"), Some(&1));
 
-  // println!("-- instantiating TensorFlow graph");
+  println!("-- instantiating TensorFlow graph");
   assert!(TF_GRAPH.graph_def().is_ok());
 
+  println!("-- initializing llamapun globals");
+  llamapun_text_indexes("<html><body><div class=\"ltx_para\"><p class=\"ltx_p\">mock</p></div></body></html>");
+  println!("-- preloading completed in {} seconds.",preload.elapsed().as_secs());
+  println!("-- launching Rocket web service");
   rocket().launch(); 
 }

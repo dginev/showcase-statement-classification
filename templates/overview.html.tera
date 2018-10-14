@@ -18,14 +18,19 @@
 
 <div class="row">
   <div class="col-md-3">
-    <div id="benchmark"></div>
     <div id="classification"></div>
+    <div id="benchmark"></div>
+    <div id="message"></div>
+    <div id="log" style="background-color: #ffddbb; display: none; word-wrap:break-word; margin: 5px;"></div>
   </div>
   <div class="col-md-6">
     <div class="form-group">
       <label for="exampleFormControlTextarea3">Type or paste the LaTeX code for a paragraph in a scientific article</label>
-      <textarea class="form-control" id="editor" rows="7"></textarea>
-      <span id="counter">&nbsp;</span>
+      <textarea class="form-control" id="editor" rows="15"></textarea>
+      <span id="counter">&nbsp;</span><br>
+      <select id="example_select" name="example">
+        <option selected="selected" value="">Select Example</option>
+      </select>
     </div>
 
     <div style="background-color: #FFFFFF; display: none;
@@ -37,12 +42,28 @@
 
   </div>
   <div class="col-md-3">
+    <h3>Method</h3>
+    <ol>
+      <li><span class="bold"><a href="https://github.com/brucemiller/LaTeXML">latexml</a></span> converts the source
+        into an HTML5 document</li>
+      <li><span class="bold"><a href="https://github.com/KWARC/llamapun">llamapun</a></span> tokenizes the first
+        paragraph
+        into a plain-text representation with sub-formula lexemes</li>
+      <li><span class="bold">tensorflow</span> executes a pre-trained BiLSTM model to obtain the likelihoods of 7
+        potential amsthm classes</li>
+    </ol>
 
-    <div id="message"></div>
-    <div id="log" style="background-color: #ffddbb; display: none; word-wrap:break-word; margin: 5px;"></div>
-    <div class="classification">
-      <!-- fill in with classification probabilities -->
-    </div>
+    <p>The model is a very simple <span class="bold">Bidirectional(LSTM(128))</span> Keras layer, with a <span class="bold">Dense(7)</span>
+      softmax output.</p>
+    <p>The input layer is embedded via the <a href="https://sigmathling.kwarc.info/resources/arxmliv-embeddings-082018/">arxmliv
+        08.2018 GloVe embeddings</a>, as well as padded/truncated to a maximum length of 480 words. A paragraph is
+      hence
+      a fixed (480,300) matrix, as passed into the bilstm layer.</p>
+    <p>The specific model in this demo was trained on 6.20 million paragraphs from the <a href="https://sigmathling.kwarc.info/resources/arxmliv-dataset-082018/">arxmliv
+        08.2018 dataset</a>, and tested on 1.55 million paragraphs respectively, obtaining a <span class="bold">0.90 F1
+        score</span>. The base rate baseline was 0.76, the frequency of the "other" class.</p>
+    <p>The classification labels originated from the author-provided LaTeX markup via the \newtheorem
+      macro and environments, in the paper sources as submitted to arXiv.</p>
   </div>
 </div>
 

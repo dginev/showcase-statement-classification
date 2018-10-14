@@ -1,5 +1,7 @@
 var examples = load_examples();
-
+for (var example in examples) {
+  $("#example_select").append("<option value=\"" + example + "\">" + example + "</option>");
+}
 function show_log() {
   $('#onthefly').hide();
   $('#log').show();
@@ -44,8 +46,6 @@ function setup_message(data) {
 
   var classes = Object.keys(data.classification);
   classes.sort();
-  console.log(classes);
-  console.log(data.classification);
 
   var max_key;
   var max_val = -1;
@@ -94,8 +94,8 @@ var hasPreamble = /^([\s\S]*\\begin{document})([\s\S]*)\\end{document}([\s\S]*)$
 var sendRequest = function (tex, my_counter, onthefly) {
   if (my_counter == ac_counter) {
     $('#log').html('');
-    $('#previewtext').html('Converting...');
-    $('#message').html('Converting...');
+    $('#previewtext').html('Analyzing...');
+    $('#message').html('Analyzing...');
     $('#benchmark').html('');
     $('#classification').html('');
     $("body").css("cursor", "progress");
@@ -191,8 +191,10 @@ function example_select_handler() {
   if (example_requested) {
     $('#onthefly').html('');
     $("#editor").val(examples[example_requested]);
+    editor_conversion_start();
   }
 }
+$('#example_select').change(example_select_handler);
 
 
 $('#ltxstyle_select').change(function () {
