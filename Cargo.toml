@@ -16,8 +16,6 @@ git = "https://github.com/tensorflow/rust"
 
 [dependencies.tensorflow-sys]
 git = "https://github.com/tensorflow/rust"
-features = ["tensorflow_gpu"]
-
 
 [dependencies]
 rocket = "*"
