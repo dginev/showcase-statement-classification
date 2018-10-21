@@ -220,7 +220,7 @@ var tex_requested = $.urlParam('tex');
 if (tex_requested) {
   $("#editor").val(decodeURIComponent(tex_requested));
 } else {
-  $("#editor").val("Write a LaTeX paragraph here. Let $e=mc^2$ be a preliminary for the following ...");
+  $("#editor").val("Write a LaTeX paragraph here, or select an example below. Let $e=mc^2$ be a preliminary for the following ...");
 }
 
 $("#editor").on('change', function () {

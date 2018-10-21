@@ -71,7 +71,7 @@ lazy_static! {
   };
   static ref TF_GRAPH : Graph = {
     // Load the computation graph defined by regression.py.
-    let filename = "model.pb";
+    let filename = "v2_model_cat6.pb";
     println!("-- loading TF model");
     let mut graph = Graph::new();
     let mut proto = Vec::new();
@@ -337,24 +337,26 @@ fn llamapun_text_indexes(xml: &str) -> Vec<f32> {
 #[derive(Debug, Serialize)]
 struct Classification {
   acknowledgement: f32,
-  algorithm: f32,
-  caption: f32,
-  proof: f32,
+  // algorithm: f32,
+  // caption: f32,
   definition: f32, 
-  problem: f32, 
-  other: f32,
+  example: f32,
+  theorem: f32,
+  problem: f32,
+  proof: f32, 
 }
 
 impl From<Tensor<f32>> for Classification {
   fn from(t: Tensor<f32>) -> Classification {
     Classification {
       acknowledgement: t[0],
-      algorithm: t[1],
-      caption: t[2],
-      proof: t[3],
-      definition: t[4],
-      problem: t[5],
-      other: t[6]
+      //algorithm: t[1],
+      // caption: t[0],
+      definition: t[1],
+      example: t[2],
+      theorem: t[3],
+      problem: t[4],
+      proof: t[5],
     }
   }
 }
@@ -415,9 +417,7 @@ fn process(req: Json<LatexmlRequest>) -> content::Json<String> {
   let mut res = ClassificationResponse {
     latexml: None,
     benchmark: Benchmark { latexml: 0, llamapun: 0, tensorflow: 0, total: 0},
-    classification: Some(Classification {
-      acknowledgement: 0.0000000013124934, algorithm: 0.0013627012, caption: 0.0000017457692, proof: 0.04190522, definition: 0.6945271, problem: 0.00066849875, other: 0.26153472
-    }),
+    classification: None,
   };
   let latexml_start = Instant::now();
   let latexml_response = latexml_call(req);
@@ -429,9 +429,10 @@ fn process(req: Json<LatexmlRequest>) -> content::Json<String> {
   res.benchmark.llamapun = llamapun_start.elapsed().as_millis();
   // 3. obtain classification prediction via tensorflow
   let tensorflow_start = Instant::now();
-  if let Ok(prediction) = classify(word_indexes) { 
-    res.classification = Some(prediction);
-  }
+  match classify(word_indexes) { 
+    Ok(prediction) => {res.classification = Some(prediction);},
+    Err(e) => println!("classification failed: {:?}", e)
+  };
   res.benchmark.tensorflow = tensorflow_start.elapsed().as_millis();
   res.benchmark.total = start.elapsed().as_millis();
   // 4. package and respond
