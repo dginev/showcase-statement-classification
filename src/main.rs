@@ -396,7 +396,7 @@ impl From<Tensor<f32>> for Classification {
 struct Benchmark {
   latexml: u128,
   llamapun: u128,
-  tensorflow: u128,
+  tensorflow_cpu: u128,
   total: u128,
 }
 
@@ -447,7 +447,7 @@ fn process(req: Json<LatexmlRequest>) -> content::Json<String> {
   // 1. obtain HTML5 via latexml
   let mut res = ClassificationResponse {
     latexml: None,
-    benchmark: Benchmark { latexml: 0, llamapun: 0, tensorflow: 0, total: 0},
+    benchmark: Benchmark { latexml: 0, llamapun: 0, tensorflow_cpu: 0, total: 0},
     classification: None,
   };
   let latexml_start = Instant::now();
@@ -464,7 +464,7 @@ fn process(req: Json<LatexmlRequest>) -> content::Json<String> {
     Ok(prediction) => {res.classification = Some(prediction);},
     Err(e) => println!("classification failed: {:?}", e)
   };
-  res.benchmark.tensorflow = tensorflow_start.elapsed().as_millis();
+  res.benchmark.tensorflow_cpu = tensorflow_start.elapsed().as_millis();
   res.benchmark.total = start.elapsed().as_millis();
   // 4. package and respond
   content::Json(serde_json::to_string(&res).unwrap())

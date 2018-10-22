@@ -53,7 +53,7 @@
         potential amsthm classes</li>
     </ol>
 
-    <p>The model is a Keras <span class="bold">BiLSTM(128)+BiLSTM(64)+LSTM(64)</span>, with a <span class="bold">Dense(8)</span>
+    <p>The model is a Keras <span class="bold">BiLSTM(128)→BiLSTM(64)→LSTM(64)</span>, with a <span class="bold">Dense(8)</span>
       softmax output.</p>
     <p>The input layer is embedded via the <a href="https://sigmathling.kwarc.info/resources/arxmliv-embeddings-082018/">arxmliv
         08.2018 GloVe embeddings</a>, as well as padded/truncated to a maximum length of 480 words. A paragraph is
