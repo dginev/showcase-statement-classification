@@ -13,7 +13,7 @@ git = "https://github.com/KWARC/llamapun"
 
 [dependencies.tensorflow]
 git = "https://github.com/tensorflow/rust"
-features = ["tensorflow_gpu"]
+#features = ["tensorflow_gpu"]
 
 [dependencies.tensorflow-sys]
 git = "https://github.com/tensorflow/rust"

@@ -1,5 +1,23 @@
 function load_examples() {
   var examples = new Array();
+  examples['acknowledgement_1'] = [
+    "It is a pleasure to thank Martin Schlottmann for his encouragement and in particular for his help in Theorem 1. We are also indebted to Michæl Baake for his interest and insights into this work.",
+    "% Source: math0002019"].join('\n');
+  examples['acknowledgement_2'] = [
+    "We wish to express our gratitude to Anna Karlin for many inﬂuential conversations about this work.",
+    "% source: 1305.0534"].join('\n');
+  examples['acknowledgement_3'] = [
+    "The work was initiated during the author visited the Academy of Mathematics and System Sciences of the Chinese Academy of Sciences in Spring 2012.",
+    "The author would like to thank Professor X.-D. Li for his invitation hospitality and helpful discussions. He brought this problem to the author’s attention.",
+    "This study was partially supported by NSFC (11101267, 11271132) and the Innovation Program of Shanghai Municipal Education Commission (13YZ087).",
+    "%source: 1305.0616"].join('\n');
+  examples['acknowledgement_4'] = [
+    "We want to express our wholehearted thanks to the following people:",
+    "V. Iftimie for iniatiating this project, J. Koll\\'ar for bringing the work of ",
+    "Takayama to our attention and G. Henkin for useful conversations. The third named author expresses its gratitude to Prof. J. Leiterer for excellent working conditions and the",
+    "``\\,Graduiertenkolleg Geometrie und Nichtlineare Analysis\\,'', especially Prof. Th. Friedrich, for support.",
+    "% source: math0002049"].join("\n");
+
   examples['definition_1'] = [
     "\\newcommand{\\MS}{{\\mathcal H}}",
     "\\newcommand{\\tens}{\\mathbin{\\otimes}}",
@@ -10,23 +28,32 @@ function load_examples() {
     "$L^1$ to $S^2_0T\\dual M\\tens L^1$ such that for some Weyl derivative $D$,",
     "the operator $\\MS-\\sym_0 D^2$ is zero order.",
     "% Source: math0001150 , Definition 2.1"].join('\n');
-
+  // examples['fail_definition'] = [
+  //   "\\newcommand{\\vc}[1]{{\\vec{#1}}}",
+  //   "\\newcommand{\\mat}[1]{{\\bf #1}}",
+  //   "$\\Lambda^{\\cal D}_{N,M}$ is the subspace of $\\Lambda_{N,M}$ whose",
+  //   "elements $\\mat{F}(x,t,\\lambda)$ satisfy the homogeneous linear conditions",
+  //   "\\begin{equation}",
+  //   "\\mat{F}(x,t,\\lambda_k)\\vc{a}^{(k)}=\\vc{0}\\,,",
+  //   "\\label{eq:homog1}",
+  //   "\\end{equation}",
+  //   "for $k=1,\\dots,M$ and ",
+  //   "\\begin{equation}",
+  //   "\\mat{F}(x,t,\\lambda_k^*)\\vc{b}^{(k,j)}=\\vc{0}\\,,",
+  //   "\\label{eq:homog2}",
+  //   "\\end{equation}",
+  //   "for $k=1,\\dots,M$ and $j=1,\\dots,N$.",
+  //   "% source: math0002068"].join('\n');
   examples['definition_2'] = [
-    "\\newcommand{\\vc}[1]{{\\vec{#1}}}",
-    "\\newcommand{\\mat}[1]{{\\bf #1}}",
-    "$\\Lambda^{\\cal D}_{N,M}$ is the subspace of $\\Lambda_{N,M}$ whose",
-    "elements $\\mat{F}(x,t,\\lambda)$ satisfy the homogeneous linear conditions",
-    "\\begin{equation}",
-    "\\mat{F}(x,t,\\lambda_k)\\vc{a}^{(k)}=\\vc{0}\\,,",
-    "\\label{eq:homog1}",
-    "\\end{equation}",
-    "for $k=1,\\dots,M$ and ",
-    "\\begin{equation}",
-    "\\mat{F}(x,t,\\lambda_k^*)\\vc{b}^{(k,j)}=\\vc{0}\\,,",
-    "\\label{eq:homog2}",
-    "\\end{equation}",
-    "for $k=1,\\dots,M$ and $j=1,\\dots,N$.",
-    "% source: math0002068"].join('\n');
+    "Given $n,k,t$, positive integers with $n\\geq t  \\geq 2$, we define the $k$-uniform hypergraph $\\mathcal{F}_k(n,t)\\subseteq \\binom{[n]}{k}$:",
+    "\\[",
+    "\\mathcal{F}_k(n,t):= \\left\\{A\\in \\binom{[n]}{k}\\colon A\\cap [t]\\neq \\emptyset\\right\\}.",
+    "\\] ",
+    "Furthermore,",
+    "\\[\\mathfrak{F}_k(n,t,r)=\\{\\mathcal{H}\\subseteq \\binom{[n]}{k}\\colon \\mathcal{F}_k(n,t)\\subseteq \\mathcal{H}, e(\\mathcal{H})=e(\\mathcal{F}_k(n,t))+r   \\}\\]",
+    "is the family of  $k$-hypergraphs that contains $\\mathcal{F}_k(n,t)$ as a subhypergraph and has exactly $r$ edges with no vertices in $[t]$. The graph $\\mathcal{F}_2(n,t)$ is also known as a \\emph{split graph} (see \\cite{golumbic2004algorithmic}).",
+    "% source: 1408.3197"
+  ].join('\n');
   examples['definition_3'] = [
     "The {\\it double affine Hecke algebra}",
     "${\\mathcal{H}}={\\mathcal{H}}(S;\\mathbf{t};q)$",
@@ -47,6 +74,118 @@ function load_examples() {
     "\\textup{(}and $\\lambda\\prec\\mu$ if $\\lambda\\preceq\\mu$ and",
     "$\\lambda\\not=\\mu$\\textup{)}.",
     "% source: math0002090"].join('\n');
+
+  examples['example_1'] = [
+    "We proceed to compare the proposed method with the standard approach for solving the",
+    "linear system in Eq 145. In the examples that follow, we employ test signals of",
+    "the form in Eq 145 with $S_p=S_{R,p}+jS_{I,p}$, where $S_{R,p}$ and $S_{I,p}$ are",
+    "independent realizations of a uniform distribution in the interval $[-1,1]$.",
+    "% source: 1408.3717 "
+  ].join('\n');
+  examples['example_2'] = [
+    "\\def\\p{\\mathfrak p}",
+    "\\def\\q{\\mathfrak q}",
+    "\\def\\ext{\\mathrm{ext}}",
+    "\\def\\m{\\mathfrak m}",
+    "\\def\\Ext{\\mathrm{Ext}}",
+    "Let $k$ be a field. \\newline",
+    "%",
+    "(1) Let $S=k[[x_1,x_2,x_3,y_1,y_2]]/(x_2^2-x_1x_3, x_2x_3, x_3^2)$ be a $3$-dimensional Cohen-Macaulay local ring which is not Gorenstein.",
+    "We set $R=S/(y_1^2, y_1y_2, y_2^2)$ which is a $1$-dimensional Cohen-Macaulay local ring. ",
+    "Note that all the prime ideals of $R$ are $\\p=(x_2,x_3,y_1,y_2)$ and $\\m=(x_1,x_2,x_3,y_1,y_2)$.",
+    "It is easy to see that $S_\\p$ is Gorenstein but $R_\\p$ is not Gorenstein. ",
+    "In particular, $R$ does not satisfy the condition $(G_0^R)$.",
+    "Putting $C=\\Ext_{S}^2(R,S)$, one can check that $C$ is a semidualizing $R$-module which is neither $R$ nor canonical module.",
+    "Since $S_\\p$ is Gorenstein, we can see that $C_\\p$ is a canonical module over $R_\\p$.",
+    "This yield that $R$ satisfy the condition $(G_0^C)$.\\newline",
+    "%",
+    "(2) Let $S=k[[x_1,x_2,x_3,x_4,y_1,y_2]]/(x_2^2-x_1x_3, x_2x_3-x_1x_4,x_3^2-x_2x_4)$ be a $4$-dimensional Cohen-Macaulay local normal domain which is not ", "Gorenstein. ",
+    "We set $R=S/(y_1^2, y_1y_2, y_2^2)$ which is a $2$-dimensional Cohen-Macaulay local ring. ",
+    "For each prime ideal $\\p$ except for $\\m=(x_1,x_2,x_3,x_4,y_1,y_2)$, we easily show that $S_\\p$ is regular. ",
+    "But for the unique minimal prime ideal $\\q = (x_2^2-x_1x_3, x_2x_3-x_1x_4,x_3^2-x_2x_4,y_1,y_2)$, $R_\\q$ is isomorphic to $K[[y_1,y_2]]_{(y_1,y_2)}/(y_1^2,y_1y_2,", "y_2^2)$, where $K$ is a field. ",
+    "Thus $R$ does not satisfy the condition $(G_0^R)$ and therefore $R$ does not satisfy the condition $(G_n^R)$ for every $n$.",
+    "Putting $C=\\Ext_{S}^2(R,S)$, one can check that $C$ is a semidualizing $R$-module which is neither $R$ nor canonical module. ",
+    "Since $S_\\p$ is regular, we can see that $C_\\p$ is a canonical module over $R_\p$.",
+    "This yield that $R$ satisfy the condition $(G_1^C)$.",
+    "% source: 1408.3796",
+  ].join('\n');
+  examples['example_3'] = [
+    "An  example  is  the  discrepancy  discussed  by",
+    "\\cite{2014MNRAS.437..116B} in the angular distance between the",
+    "inferred apocenters of the Sgr leading and trailing arms. Observations",
+    "suggest that this  angular distance is smaller than  what is predicted",
+    "in a fixed  logarithmic  potential.    Our  analysis  showed  that  the",
+    "differences in  the angular distances between the  last two Sgr's orbital apocenters",
+    "could at least be partially accounted for with both a free MW model ",
+    "and the inclusion of the LMC. ",
+    "% source: 1408.4128"
+  ].join('\n');
+
+  examples["introduction_1"] = [
+    "The study of the isoscalar giant monopole resonance (ISGMR) has been for a long time a valuable tool",
+    "to investigate the nuclear structure and to extrapolate the behavior of nuclear matter \\cite{RS}.",
+    "Various approximations in the energy density functional (EDF) framework using interactions with",
+    "nuclear matter incompressibility modulus $K_{NM}\\approx 230\\pm 20$ MeV have shown good agreement with",
+    "the experimentally determined centroids in particular for $^{208}$Pb, $^{90}$Zr and $^{144}$Sm. ",
+    "%",
+    "In Ref. \\cite{12Past} Niksi{\\'c} \\textit{et al.} showed for the first time that a relativistic mean field",
+    "theory approach is also able to return good estimates of the ISGMR centroids with the same value of",
+    "the incompressibility (improving older results which required values of $K_{NM}\\approx$ 250 MeV).",
+    "This further confirmation seemed to settle down the problem.",
+    "% source: 1305.7299"].join('\n');
+  examples["introduction_2"] = [
+    "We are witnessing the emergence and rapid proliferation of various social applications, including resource sharing sites",
+    "(e.g., Flickr, Youtube), blogs (e.g., Bloggers, LiveJournal), social networks (e.g., Facebook, Myspace),",
+    "and microblogs (e.g., Twitter, Sina Weibo). These social applications facilitate users to produce, share,",
+    "and consume online content. A prominent characteristic of these systems is the relationships formed among users.",
+    "These relationships can be described by networks, where nodes represent users and links denote the relations",
+    "or interactions among users. Many efforts have been made to understand the structure of theses networks\\cite{Newman2010}.",
+    "Recently, much research attention is paid to various dynamics on these networks, investigating users' tendency",
+    "to engage in activities such as forwarding messages, linking to articles, joining groups, purchasing products,",
+    "or becoming fans of certain pages after their friends have ",
+    "done\\cite{Adar2004, Backstrom2006, Cosley2010, Crane2008, Gruhl2004, Leskovec2007a, Leskovec2007b, Liben-Nowell2008, Sun2009}.",
+    "% source: 1306.0196"
+  ].join('\n');
+  examples["introduction_3"] = [
+    "The ability to trap and cool atoms in optical lattices~\\cite{review_optical_lattices} has opened up new avenues in atomic physics.",
+    "This has, perhaps unexpectedly, moved this area closer to condensed matter physics. Optical lattices are in fact one of",
+    "the most promising candidates for the realisation of a universal quantum simulator~\\cite{nature_insight}.",
+    "This is a programmable quantum system that can be made to evolve according to a desired theoretical model.",
+    "One of the first proposals of a quantum simulator with ultracold bosonic atoms in optical lattices was",
+    "the one given in Ref.~\\cite{jaksch98} where the implementation of the Bose-Hubbard model (BHM) was suggested",
+    "and later implemented~\\cite{Greiner2002}. This model was originally a more abstract version of the corresponding",
+    "fermionic Hubbard model which describes propagation of fermionic particles in conductors.",
+    "The BHM exhibits quite interesting physics with an interaction induced insulator called the Mott-insulator state",
+    "and a dissipation free conducting superfluid~\\cite{fisher89}.",
+    "% source: 1408.2533"
+  ].join('\n');
+  examples["introduction_4"] = [
+    "Ever since Léon Foucault's first demonstration in Paris a century and a half ago, the pendulum's rate of precession with respect to",
+    "local North has inspired a quest for elegant ways to explain it. `Foucault precession' is a slow rotation of the plane of",
+    "oscillation of the pendulum. It is caused by the rotation of the earth, and its rate depends on geographical latitude.",
+    "This classic experiment is a perennial favorite at science museums and similar venues, apart from its value in teaching",
+    "certain ideas in mathematical physics.",
+    "%source: 1408.3047"
+  ].join('\n');
+  examples["introduction_5"] = [
+    "The paper is structured as follows: we introduce necessary terminology in section 2.1 and technical assumptions on non-classical geometry",
+    "as well as a key theorem from [24] in section 2.2. Section 3 details our prescription for computing holographic entanglement entropy,",
+    "including some consistency checks and comparison to the FLM formula. In section 4, we prove that quantum extremal surfaces lie deeper",
+    "than (and spacelike to) the causal surface, and additionally act as an obstacle to causal signals. We also ``quantize'' the theorem that",
+    "the apparent hroizon always lies inside the causal horizon. We comment on the implication for bulk signals coming in from the boundary.",
+    "Section 5 contains several theorems qualifying barriers to quantum extremal surfaces, and section 6 discusses the implications for bulk reconstruction.",
+    "% source: 1408.3203"
+  ].join('\n');
+
+  examples['problem_1'] = [
+    "\\newcommand\\tM{\\widetilde M}",
+    "Find non-trivial $L^2$ holomorphic sections in $p^*E^k$ over $\\tM$ for large $k$ provided",
+    "$E$ satisfies reasonable conditions in terms of curvature positivity.",
+    "% source: math0002049"].join("\n");
+  examples['problem_2'] = "Classify the groups $G$ with trivial centre such that the equation $X^\prime = G$ has exactly one reduced solution. $_\\blacksquare$";
+  examples['problem_3'] = "Given a preference system $( G, <)$, weights $w : E ( G ) \\rightarrow \\mathbb{R}_+$, find a popular matching $M$ of $(G, <)$ that minimizes $w(M)$.";
+  examples['problem_4'] = "Determine the dual atoms of $\\mathop{Cl}_{sym}(X)$.";
+  examples['problem_5'] = "Generalize theorem 4 to singular cardinals.";
 
   examples['proof_1'] = [
     "This follows immediately from a result by Lipson [10], Corollary 6. $\\square$",
@@ -89,82 +228,7 @@ function load_examples() {
     "l_{ij}m_j-\\sum_{x\\in X',y\\in X',j\\in X''}l_{ix}l^{xy}l_{yj}m_j.$$ ",
     "This implies the lemma. ",
     "% source: math0002040"].join('\n');
-
-  examples['problem_1'] = "Classify the groups $G$ with trivial centre such that the equation $X^\prime = G$ has exactly one reduced solution. $_\\blacksquare$";
-  examples['problem_2'] = "Given a preference system $( G, <)$, weights $w : E ( G ) \\rightarrow \\mathbb{R}_+$, find a popular matching $M$ of $(G, <)$ that minimizes $w(M)$.";
-  examples['problem_3'] = "Determine the dual atoms of $\\mathop{Cl}_{sym}(X)$.";
-  examples['problem_4'] = "Generalize theorem 4 to singular cardinals.";
-
-  examples['acknowledgement_1'] = [
-    "It is a pleasure to thank Martin Schlottmann for his encouragement and in particular for his help in Theorem 1. We are also indebted to Michæl Baake for his interest and insights into this work.",
-    "% Source: math0002019"].join('\n');
-  examples['acknowledgement_2'] = [
-    "We wish to express our gratitude to Anna Karlin for many inﬂuential conversations about this work.",
-    "% source: 1305.0534"].join('\n');
-  examples['acknowledgement_3'] = [
-    "The work was initiated during the author visited the Academy of Mathematics and System Sciences of the Chinese Academy of Sciences in Spring 2012.",
-    "The author would like to thank Professor X.-D. Li for his invitation hospitality and helpful discussions. He brought this problem to the author’s attention.",
-    "This study was partially supported by NSFC (11101267, 11271132) and the Innovation Program of Shanghai Municipal Education Commission (13YZ087).",
-    "%source: 1305.0616"].join('\n');
-
-  examples['algorithm_1'] = [
-    "$\\bullet$ step 2",
-    "Determining the edges of the follower set graph lines 2-6 in the pseudocode.",
-    "We read the rows with the true false entries from top to bottom.",
-    "If we pass to a row that is the same with one already read we move to the next i.e. we identify the words with the same follower sets lines 7-12 of the pseudocode."
-  ].join('\n');
-
-  examples['caption_1'] = [
-    "The switches of the railway circuit.",
-    "From left to right the fixed switch the flip flop and the memory switch."
-  ].join('\n');
-  examples['caption_2'] = [
-    "Rules for the motions of the locomotive across a flip flop switch"
-  ].join('\n');
-  examples['caption_3'] = [
-    "The subtilings of the heptagrid.",
-    "On the left hand side generation 1 on the right hand side how generation 2.",
-    "The heptatrigrid is built from generation 3. "
-  ].join('\n');
-
-  examples['other_1'] = [
-    "{\\it Let $(X,B,P)$ be a translation invariant",
-    "determinantal random point field.  Then the dynamical system $(X,B,P,\\{T^t\\})$",
-    "is ergodic, has the mixing property of any multiplicity and its spectra is",
-    "absolutely continuous.}",
-    "\\medskip",
-    "\\noindent{\\bf Remark 11}. Recall that the absolute continuity of the spectra",
-    "implies the mixing property of multiplicity 1, which in turn implies",
-    "ergodicity ([CFS]).",
-    "% source: math0002099"].join('\n');
-  examples['other_2'] = ["The group $K$ is compact.",
-    "% source: math0002184"].join('\n');
-  examples['other_3'] = [
-    "Here we provide examples of figures generated using ManeParse and built-in Mathematica plotting functions. These plots display the versatility of the Mathematica plotting functions and how easily ManeParse interacts with them. ",
-    "All the examples shown below are a representations of the interpolation routine and/or error functions acting on a PDF set or family of sets.",
-    "% source: 1510.06009"
-  ].join('\n');
-
-  // Some examples of classification Failures:
-
-  examples['fail_acknowledgement'] = [
-    "We want to express our wholehearted thanks to the following people:",
-    "V. Iftimie for iniatiating this project, J. Koll\\'ar for bringing the work of ",
-    "Takayama to our attention and G. Henkin for useful conversations. The third named author expresses its gratitude to Prof. J. Leiterer for excellent working conditions and the",
-    "``\\,Graduiertenkolleg Geometrie und Nichtlineare Analysis\\,'', especially Prof. Th. Friedrich, for support.",
-    "% source: math0002049"].join("\n");
-
-  examples['fail_caption'] = [
-    "The following table collects information about all curves defined so far"
-  ].join("\n");
-
-  examples['fail_problem'] = [
-    "\\newcommand\\tM{\\widetilde M}",
-    "Find non-trivial $L^2$ holomorphic sections in $p^*E^k$ over $\\tM$ for large $k$ provided",
-    "$E$ satisfies reasonable conditions in terms of curvature positivity.",
-    "% source: math0002049"].join("\n");
-
-  examples['fail_proof'] = [
+  examples['proof_4'] = [
     "\\newcommand{\\FF}{{\\mathbf F}_{q}}",
     "\\newcommand{\\OO}{\\mathcal O}",
     "\\newcommand{\\F}{{\\mathbf F}}",
@@ -229,9 +293,113 @@ function load_examples() {
     "the $\\FF$-span of the $h_v$ is all of  $\\Maps(V,\\FF)$.",
     "Expanding the product defining $h_v$ shows ",
     "$h_v$ is in the span of the $\\Phi_i$ since the exponents of ",
-    "the $\varphi_j$ in the product never exceed $q-1$.",
+    "the $\\varphi_j$ in the product never exceed $q-1$.",
     "This concludes the proof.",
     "% source: math0002026"].join("\n");
+
+  examples['proposition_1'] = [
+    "Let $G$ be a graph with $n$ vertices satisfying the $(p,q)$-property; for $n\\geq 2p^2$ and $p\\geq q\\geq 3$ we have",
+    "\\[",
+    "|E(G)|\\leq \\binom{n}{2} -\\binom{n-t}{2}+r,",
+    "\\]",
+    "where $\\displaystyle t=\\left\\lfloor \\frac{p-1}{q-1}\\right\\rfloor$ and $r$ is the residue of $\\displaystyle\\frac{p-1}{q-1}$. This bound is sharp.",
+    "% source: 1408.3197"
+  ].join('\n');
+  examples['proposition_2'] = [
+    "Let $G$ be a bipartite graph with partition sets $A,B$. If $|A|<|B|$ and $e(G)>(t-1)|B|$, then $G$ has a $t$-matching.",
+    "% source: 1408.3197"
+  ].join('\n');
+  examples['proposition_3'] = [
+    "For $n$ sufficiently large and $p\\geq q \\geq 2$,",
+    "\\[ex_k(n,\\mathfrak{D}_k(p,q))=\\varphi_k(n,p,q).\\]",
+    "% source: 1408.3197"
+  ].join('\n');
+  examples["proposition_4"] = [
+    "For all $Q$, $\\sigma$, $e$, $e'$, $\\Sigma$, $\\tau$, $\\gamma$, and $\\gamma'$, if",
+    "$\\epsilon;\\Sigma\\vdash e : \\tau \\mid \\gamma$,",
+    "$ Q\\vdash \\sigma : \\Sigma$,",
+    "$\\delta\\le\\Sigma$, and",
+    "$\\sigma,e\\overset{\\gamma'}{\\rightarrow}^*_Q \\sigma',e'$,",
+    "then there exist $\\Sigma'$, $\\gamma''$ such that",
+    "$\\epsilon;\\Sigma'\\vdash e' : \\tau \\mid \\gamma''$,",
+    "$Q\\vdash\\sigma':\\Sigma'$,",
+    "$\\Sigma\\le\\Sigma'$, and",
+    "$\\gamma'\\rhd\\gamma''\\sqsubseteq\\gamma$.",
+    "%source: 1808.02010"
+  ].join('\n');
+
+
+  examples["related_work_1"] = [
+    "Two widely popular classes of keyword extraction techniques were considered for extraction/ranking of skill sets in the job postings.",
+    "One class of keyword extraction/ranking technique is based on keyword matching or Vector Space models with basic TF-IDF weighting \\cite{1}.",
+    "The TF-IDF weighting is obtained by using only the content of the document itself. Then several similarity measurements were used to compare",
+    "the similarity of the two documents based on their feature vectors \\cite{2}. The other class of keyword extraction/ranking technique is based",
+    "on using context information to improve keyword extraction. Recently, there has been lot of work on developing different machine learning methods",
+    "to make use of the context in the document \\cite{3},\\cite{28}. Zhang et al. \\cite{4} discusses the use of support vector machines for",
+    "keyword extraction from documents using both the local and global context. There are number of techniques developed to use local and global context",
+    "in keyword extraction \\cite{3}, \\cite{4}, \\cite{5}.",
+    "% source: 1709.05050"
+  ].join('\n');
+  examples["related_work_2"] = [
+    "Prior work on accelerating video segmentation focuses on reducing the frequency of feature computations across frames.",
+    "Schemes have been proposed to reuse cached feature computations from previous frames as is \cite{CC}, and to propagate features forward",
+    "from designated keyframes via warping with optical flow estimates (Zhu, et al., \cite{DFF}). While the latter approach arguably supersedes",
+    "the former by allowing feature maps to evolve across frames, it suffers from one key shortcoming: features can be warped forward only as long",
+    "as frame-to-frame changes consist primarily of internal displacements. Other forms of temporal evolution, such as the appearance of new objects,",
+    "and simple perspective changes, such as camera pans, render past feature maps obsolete. In settings with complex dynamics, such as the urban",
+    "environments captured in the Cityscapes and CamVid datasets \cite{Cityscapes, CamVid}, or in footage with fast ego motion, features must be",
+    "recomputed frequently, limiting the attainable speedup.",
+    "%source: 1803.07742"
+  ].join('\n');
+  examples["related_work_3"] = [
+    "The closely related work is split among three major groups: generic effect systems, algebraic",
+    "models of sequential computation, and concrete effect systems",
+    " % source: 1808.02010"
+  ].join('\n');
+
+  // examples['algorithm_1'] = [
+  //   "$\\bullet$ step 2",
+  //   "Determining the edges of the follower set graph lines 2-6 in the pseudocode.",
+  //   "We read the rows with the true false entries from top to bottom.",
+  //   "If we pass to a row that is the same with one already read we move to the next i.e. we identify the words with the same follower sets lines 7-12 of the pseudocode."
+  // ].join('\n');
+
+  // examples['caption_1'] = [
+  //   "The switches of the railway circuit.",
+  //   "From left to right the fixed switch the flip flop and the memory switch."
+  // ].join('\n');
+  // examples['caption_2'] = [
+  //   "Rules for the motions of the locomotive across a flip flop switch"
+  // ].join('\n');
+  // examples['caption_3'] = [
+  //   "The subtilings of the heptagrid.",
+  //   "On the left hand side generation 1 on the right hand side how generation 2.",
+  //   "The heptatrigrid is built from generation 3. "
+  // ].join('\n');
+
+  // examples['other_1'] = [
+  //   "{\\it Let $(X,B,P)$ be a translation invariant",
+  //   "determinantal random point field.  Then the dynamical system $(X,B,P,\\{T^t\\})$",
+  //   "is ergodic, has the mixing property of any multiplicity and its spectra is",
+  //   "absolutely continuous.}",
+  //   "\\medskip",
+  //   "\\noindent{\\bf Remark 11}. Recall that the absolute continuity of the spectra",
+  //   "implies the mixing property of multiplicity 1, which in turn implies",
+  //   "ergodicity ([CFS]).",
+  //   "% source: math0002099"].join('\n');
+  // examples['other_2'] = ["The group $K$ is compact.",
+  //   "% source: math0002184"].join('\n');
+  // examples['other_3'] = [
+  //   "Here we provide examples of figures generated using ManeParse and built-in Mathematica plotting functions. These plots display the versatility of the Mathematica plotting functions and how easily ManeParse interacts with them. ",
+  //   "All the examples shown below are a representations of the interpolation routine and/or error functions acting on a PDF set or family of sets.",
+  //   "% source: 1510.06009"
+  // ].join('\n');
+
+  // Some examples of classification Failures:
+
+  // examples['fail_caption'] = [
+  //   "The following table collects information about all curves defined so far"
+  // ].join("\n");
 
   return examples;
 }

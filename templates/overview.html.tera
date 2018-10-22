@@ -53,18 +53,20 @@
         potential amsthm classes</li>
     </ol>
 
-    <p>The model is a very simple <span class="bold">Bidirectional(LSTM(128))</span> Keras layer, with a <span class="bold">Dense(6)</span>
+    <p>The model is a Keras <span class="bold">BiLSTM(128)+BiLSTM(64)+LSTM(64)</span>, with a <span class="bold">Dense(8)</span>
       softmax output.</p>
     <p>The input layer is embedded via the <a href="https://sigmathling.kwarc.info/resources/arxmliv-embeddings-082018/">arxmliv
         08.2018 GloVe embeddings</a>, as well as padded/truncated to a maximum length of 480 words. A paragraph is
       hence
       a fixed (480,300) matrix, as passed into the bilstm layer.</p>
-    <p>The specific model in this demo was trained on 3.92 million paragraphs from the <a href="https://sigmathling.kwarc.info/resources/arxmliv-dataset-082018/">arxmliv
-        08.2018 dataset</a>, and tested on 0.98 million paragraphs respectively, obtaining a <span class="bold">0.94 F1
-        score</span>. The base rate baseline was 0.59, the frequency of the "theorem" class.</p>
+    <p>The specific model in this demo was trained on 4.08 million paragraphs from the <a href="https://sigmathling.kwarc.info/resources/arxmliv-dataset-082018/">arxmliv
+        08.2018 dataset</a>, and tested on 1.02 million paragraphs respectively, obtaining a <span class="bold">0.95 F1
+        score</span>. The base rate baseline was 0.62, the frequency of the "proposition" class.</p>
     <p>The classification labels originated from the author-provided LaTeX markup via the \newtheorem
-      macro and environments, in the paper sources as submitted to arXiv.</p>
-    <p>For practical evaluation, a likelihood threshold of 0.75 could be used, where entries with smaller likelihoods
+      macro and environments, in the paper sources as submitted to arXiv. Only the first paragraph in each environment
+      was used. The "introduction" and "related work" classes were obtained from sections of the same name.</p>
+    <p>For practical evaluation, a likelihood threshold of 0.70—0.75 could be used, where entries with smaller
+      likelihoods
       can be considered as an "other" label.</p>
   </div>
 </div>

@@ -71,7 +71,7 @@ lazy_static! {
   };
   static ref TF_GRAPH : Graph = {
     // Load the computation graph defined by regression.py.
-    let filename = "v2_model_cat6.pb";
+    let filename = "v3_model_cat8_cpu.pb";
     println!("-- loading TF model");
     let mut graph = Graph::new();
     let mut proto = Vec::new();
@@ -334,29 +334,60 @@ fn llamapun_text_indexes(xml: &str) -> Vec<f32> {
   words
 }
 
+// Version 2:
+// #[derive(Debug, Serialize)]
+// struct Classification {
+//   acknowledgement: f32,
+//   // algorithm: f32,
+//   // caption: f32,
+//   definition: f32, 
+//   example: f32,
+//   theorem: f32,
+//   problem: f32,
+//   proof: f32, 
+// }
+
+
+// impl From<Tensor<f32>> for Classification {
+//   fn from(t: Tensor<f32>) -> Classification {
+//     Classification {
+//       acknowledgement: t[0],
+//       //algorithm: t[1],
+//       // caption: t[0],
+//       definition: t[1],
+//       example: t[2],
+//       theorem: t[3],
+//       problem: t[4],
+//       proof: t[5],
+//     }
+//   }
+// }
+
+// Version 3:
 #[derive(Debug, Serialize)]
 struct Classification {
   acknowledgement: f32,
-  // algorithm: f32,
-  // caption: f32,
+  proposition: f32,
   definition: f32, 
   example: f32,
-  theorem: f32,
+  introduction: f32,
   problem: f32,
   proof: f32, 
+  related_work: f32,
 }
+
 
 impl From<Tensor<f32>> for Classification {
   fn from(t: Tensor<f32>) -> Classification {
     Classification {
       acknowledgement: t[0],
-      //algorithm: t[1],
-      // caption: t[0],
-      definition: t[1],
-      example: t[2],
-      theorem: t[3],
-      problem: t[4],
-      proof: t[5],
+      proposition: t[1],
+      definition: t[2],
+      example: t[3],
+      introduction: t[4],
+      problem: t[5],
+      proof: t[6],
+      related_work: t[7]
     }
   }
 }
