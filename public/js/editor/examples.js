@@ -74,6 +74,10 @@ function load_examples() {
     "\\textup{(}and $\\lambda\\prec\\mu$ if $\\lambda\\preceq\\mu$ and",
     "$\\lambda\\not=\\mu$\\textup{)}.",
     "% source: math0002090"].join('\n');
+  examples['definition_5'] = [
+    "The traditional F-measure or balanced F-score (``$F_1$ score'') is the Harmonic mean of precision and recall:",
+    "$$F_1 = \\left(\\frac{\\mathrm{recall}^{-1} + \\mathrm{precision}^{-1}}{2}\\right)^{-1} = 2 \\cdot \\frac{\\mathrm{precision} \\cdot \\mathrm{recall}}{\\mathrm{precision} + \\mathrm{recall}}$$",
+    "% source: https://en.wikipedia.org/wiki/F1_score "].join('\n');
 
   examples['example_1'] = [
     "We proceed to compare the proposed method with the standard approach for solving the",
