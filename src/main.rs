@@ -1,23 +1,13 @@
-#![feature(plugin)]
-#![feature(duration_as_u128)] 
-#![plugin(rocket_codegen)]
+#![feature(proc_macro_hygiene, decl_macro)]
 
 #[macro_use]
 extern crate serde_derive;
 #[macro_use]
 extern crate lazy_static;
-extern crate hyper;
-extern crate hyper_tls;
+
+#[macro_use]
 extern crate rocket;
-extern crate rocket_contrib;
-extern crate serde_json;
-extern crate url;
-extern crate tokio_core;
-extern crate llamapun;
-extern crate libxml;
-extern crate regex;
 // NOTE! Expectation is tensorflow 1.10.1 at the moment, and there is no end of potential grief if there is a mismatch.
-extern crate tensorflow;
 
 use std::collections::HashMap;
 use std::io::Cursor;
@@ -55,7 +45,8 @@ use rocket::response::content;
 use rocket::response::status::{NotFound};
 use rocket::response::{NamedFile};
 
-use rocket_contrib::{Json, Template};
+use rocket_contrib::json::Json;
+use rocket_contrib::templates::Template;
 
 // We need a singleton Corpus object to hold the various expensive state objects
 static MAX_WORD_LENGTH : usize = 25;
@@ -71,8 +62,8 @@ lazy_static! {
   };
   static ref TF_GRAPH : Graph = {
     // Load the computation graph defined by regression.py.
-    let filename = "v3_model_cat8_cpu.pb";
-    println!("-- loading TF model");
+    let filename = "v3_model_cat8_gpu.pb";
+    println!("-- loading TF model {}", filename);
     let mut graph = Graph::new();
     let mut proto = Vec::new();
     File::open(filename).unwrap().read_to_end(&mut proto).unwrap();
@@ -285,7 +276,7 @@ fn llamapun_text_indexes(xml: &str) -> Vec<f32> {
     'sentences: for mut sentence in paragraph.iter() {
       for word in sentence.simple_iter() {
         if !word.range.is_empty() {
-          let mut word_string = word
+          let word_string = word
             .range
             .get_plaintext()
             .chars()
@@ -396,7 +387,7 @@ impl From<Tensor<f32>> for Classification {
 struct Benchmark {
   latexml: u128,
   llamapun: u128,
-  tensorflow_cpu: u128,
+  tensorflow: u128,
   total: u128,
 }
 
@@ -447,7 +438,7 @@ fn process(req: Json<LatexmlRequest>) -> content::Json<String> {
   // 1. obtain HTML5 via latexml
   let mut res = ClassificationResponse {
     latexml: None,
-    benchmark: Benchmark { latexml: 0, llamapun: 0, tensorflow_cpu: 0, total: 0},
+    benchmark: Benchmark { latexml: 0, llamapun: 0, tensorflow: 0, total: 0},
     classification: None,
   };
   let latexml_start = Instant::now();
@@ -464,7 +455,7 @@ fn process(req: Json<LatexmlRequest>) -> content::Json<String> {
     Ok(prediction) => {res.classification = Some(prediction);},
     Err(e) => println!("classification failed: {:?}", e)
   };
-  res.benchmark.tensorflow_cpu = tensorflow_start.elapsed().as_millis();
+  res.benchmark.tensorflow = tensorflow_start.elapsed().as_millis();
   res.benchmark.total = start.elapsed().as_millis();
   // 4. package and respond
   content::Json(serde_json::to_string(&res).unwrap())
