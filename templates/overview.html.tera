@@ -6,7 +6,7 @@
 
     <div class="center">
       <h1 class="welcome-title">
-        Scientific Paragraph Classification<br>
+        Scientific Statement Classification<br>
         <h2 class="welcome-subtitle">A minimal demonstration for automatic classification of scientific paragraphs via
           latexml, llamapun and tensorflow</h2>
         <br>
@@ -25,7 +25,8 @@
   </div>
   <div class="col-md-6">
     <div class="form-group">
-      <label for="exampleFormControlTextarea3">Type or paste the LaTeX code for a paragraph in a scientific article</label>
+      <label for="exampleFormControlTextarea3">Type or paste the LaTeX code for a paragraph in a scientific
+        article</label>
       <textarea class="form-control" id="editor" rows="15"></textarea>
       <span id="counter">&nbsp;</span><br>
       <select id="example_select" name="example">
@@ -35,6 +36,10 @@
 
     <div style="background-color: #FFFFFF; display: none;
                 word-wrap:break-word; margin: 5px;" id="onthefly"></div>
+    <div style="background-color: #FFFFFF; display: none;
+                    word-wrap:break-word; margin: 5px;" id="plaintext"></div>
+    <div style="background-color: #FFFFFF; display: none;
+                    word-wrap:break-word; margin: 5px;" id="embedding"></div>
 
     <div style="display:none">
       <div id="source"></div>
@@ -49,24 +54,29 @@
       <li><span class="bold"><a href="https://github.com/KWARC/llamapun">llamapun</a></span> tokenizes the first
         paragraph
         into a plain-text representation with sub-formula lexemes</li>
-      <li><span class="bold">tensorflow</span> executes a pre-trained BiLSTM model to obtain the likelihoods of 6
-        amsthm labels and 2 section labels.</li>
+      <li><span class="bold">tensorflow</span> executes a pre-trained BiLSTM model to obtain the likelihoods of 13
+        statement classes.</li>
     </ol>
 
-    <p>The model is a Keras <span class="bold">BiLSTM(128)→BiLSTM(64)→LSTM(64)</span>, with a <span class="bold">Dense(8)</span>
+    <p>The model is a Keras <span class="bold">BiLSTM(128)→BiLSTM(64)→LSTM(64)</span>, with a <span
+        class="bold">Dense(13)</span>
       softmax output.</p>
-    <p>The input layer is embedded via the <a href="https://sigmathling.kwarc.info/resources/arxmliv-embeddings-082018/">arxmliv
+    <p>The input layer is embedded via the <a
+        href="https://sigmathling.kwarc.info/resources/arxmliv-embeddings-082018/">arxmliv
         08.2018 GloVe embeddings</a>, as well as padded/truncated to a maximum length of 480 words. A paragraph is
       hence
       a fixed (480,300) matrix, as passed into the bilstm layer.</p>
-    <p>The specific model in this demo was trained on 4.08 million paragraphs from the <a href="https://sigmathling.kwarc.info/resources/arxmliv-dataset-082018/">arxmliv
-        08.2018 dataset</a>, and tested on 1.02 million paragraphs respectively, obtaining a <span class="bold">0.95 F1
-        score</span>. The base rate baseline was 0.62, the frequency of the "proposition" class.</p>
-    <p>Six of the classification labels originated from the author-provided LaTeX markup via the \newtheorem
-      macro and environments, in the paper sources as submitted to arXiv. Only the first paragraph in each environment
-      was used. Separately, the "introduction" and "related work" classes were obtained from sections of the same name.</p>
-    <p>For practical evaluation, a likelihood threshold of 0.70—0.75 could be used, where entries with smaller
-      likelihoods
+    <p>The specific model in this demo was trained on 8.3 million paragraphs from the <a
+        href="https://sigmathling.kwarc.info/resources/arxmliv-dataset-082018/">arxmliv
+        08.2018 dataset</a>, and tested on 2.1 million paragraphs respectively, obtaining a <span class="bold">0.91 F1
+        score</span>. The base rate baseline was 0.39, the frequency of the "proposition" class.</p>
+    <p>The classification labels originated from the author-provided LaTeX markup via the \newtheorem
+      macro and environments, in the paper sources as submitted to arXiv, as well as from the standard latex
+      sectioning/heading macros. The final 13 classes were grouped from an empirical study of 50 classes, 25 of which
+      were used and reorganized.<br>
+      Only the first logical paragraph in each environment was used.
+    </p>
+    <p>For practical evaluation, a likelihood threshold could be used, where entries under the specified likelihood
       can be considered as an "other" label.</p>
   </div>
 </div>

@@ -4,11 +4,15 @@ for (var example in examples) {
 }
 function show_log() {
   $('#onthefly').hide();
+  $('#plaintext').hide();
+  $('#embedding').hide();
   $('#log').show();
 }
 function show_result() {
   $('#log').hide();
   $('#onthefly').show();
+  $('#plaintext').show();
+  $('#embedding').show();
 
   if (!canMathML && typeof MathJax !== "undefined") {
     MathJax
@@ -38,7 +42,11 @@ function setup_message(data) {
   $('#log').html($('#log').text(data.latexml.log).html().replace(/\n/g, "<br />"));
   var benchmark = "<table class='benchmark table table-striped'><thead><tr><th>stage</th><th>seconds</th></tr></thead><tbody>";
   for (var key in data.benchmark) {
-    benchmark += "<tr><td>" + key + "</td><td>" + precise(data.benchmark[key] / 1000.0) + "</td></tr>";
+    seconds = precise(data.benchmark[key] / 1000.0);
+    if (seconds < 0.02) {
+      seconds = "cached";
+    }
+    benchmark += "<tr><td>" + key + "</td><td>" + seconds + "</td></tr>";
   }
   benchmark += "</tbody></table>";
   $('#benchmark').html(benchmark);
@@ -136,7 +144,9 @@ var sendRequest = function (tex, my_counter, onthefly) {
       if (onthefly) {
         if (!hasFatal.test(data.latexml.status)) {
           if ((data.latexml.result != '') && (my_counter <= ac_counter)) {
-            $('#onthefly').html(data.latexml.result);
+            $('#onthefly').html("<h4>Rendered:</h4>" + data.latexml.result);
+            $('#plaintext').html("<h4>Plain text:</h4><p>" + data.plaintext + "</p>");
+            $('#embedding').html("<h4>Embedding:</h4><p>[" + data.embedding + "]</p>");
             show_result();
           }
         } else {
@@ -169,6 +179,8 @@ function do_convert_on_the_fly(e) {
     if (!tex) {
       ac_counter = 0;
       $('#onthefly').html(' ');
+      $('#plaintext').html(' ');
+      $('#embedding').html(' ');
       return;
     }
 
@@ -190,6 +202,8 @@ function example_select_handler() {
 
   if (example_requested) {
     $('#onthefly').html('');
+    $('#plaintext').html('');
+    $('#embedding').html('');
     $("#editor").val(examples[example_requested]);
     editor_conversion_start();
   }
@@ -220,7 +234,7 @@ var tex_requested = $.urlParam('tex');
 if (tex_requested) {
   $("#editor").val(decodeURIComponent(tex_requested));
 } else {
-  $("#editor").val("Show that this demo works, by writing a scientific paragraph in \\LaTeX here, or by selecting an item from the dropdown menu below.");
+  $("#editor").val("If you have an example in mind, write it as a \\LaTeX{} paragraph in this text area. Alternatively, select an item from the dropdown menu below.");
 }
 
 $("#editor").on('change', function () {

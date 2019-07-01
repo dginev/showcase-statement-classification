@@ -1,13 +1,13 @@
 #![feature(proc_macro_hygiene, decl_macro)]
 
 #[macro_use]
-extern crate serde_derive;
-#[macro_use]
 extern crate lazy_static;
+use serde::{Deserialize, Serialize};
 
 #[macro_use]
 extern crate rocket;
-// NOTE! Expectation is tensorflow 1.10.1 at the moment, and there is no end of potential grief if there is a mismatch.
+#[macro_use]
+extern crate cached;
 
 use std::collections::HashMap;
 use std::io::Cursor;
@@ -17,63 +17,67 @@ use std::sync::Mutex;
 use std::time::Instant;
 
 // use std::cell::RefCell;
-use std::error::Error;
+// use std::error::Error;
 use std::fs::File;
 use std::io::Read;
 use std::result::Result;
 
 use libxml::xpath::Context;
 use llamapun::data::{Corpus, Document};
-use llamapun::dnm;
+use llamapun::util::data_helpers;
 use regex::Regex;
 
 // use tensorflow::Code;
-use tensorflow::{Tensor,Graph,Session,SessionOptions, SessionRunArgs};
 use tensorflow::ImportGraphDefOptions;
+use tensorflow::{Graph, Session, SessionOptions, SessionRunArgs, Tensor};
 
+use hyper::client::HttpConnector;
 use hyper::header::{HeaderValue, CONTENT_LENGTH, CONTENT_TYPE};
 use hyper::rt::{Future, Stream};
 use hyper::{Body, Method};
 use hyper::{Client, Request};
-use hyper::client::{HttpConnector};
-use hyper_tls::HttpsConnector;
+// use hyper_tls::HttpsConnector;
 use tokio_core::reactor::Core;
 
 use rocket::fairing::{Fairing, Info, Kind};
 use rocket::http::Header;
 use rocket::response::content;
-use rocket::response::status::{NotFound};
-use rocket::response::{NamedFile};
+use rocket::response::status::NotFound;
+use rocket::response::NamedFile;
 
 use rocket_contrib::json::Json;
 use rocket_contrib::templates::Template;
 
 // We need a singleton Corpus object to hold the various expensive state objects
-static MAX_WORD_LENGTH : usize = 25;
-static PARAGRAPH_SIZE : usize = 480;
-static INDEX_FROM : f32 = 2.0; // arxiv.py preprocessing offsets all indexes with 2, e.g. NUM 1 --> 3
+static MAX_WORD_LENGTH: usize = 25;
+static PARAGRAPH_SIZE: usize = 480;
 
 lazy_static! {
-  static ref IS_NUMERIC : Regex = Regex::new(r"^-?(?:\d+)(?:[a-k]|(?:\.\d+(?:[eE][+-]?\d+)?))?$").unwrap();
-  static ref DICTIONARY : Mutex<HashMap<String, u64>> = {
-    let json_file = File::open(Path::new("ams_word_index.json")).expect("file not found");
-    let dictionary: HashMap<String, u64> = serde_json::from_reader(json_file).expect("error while reading json");
+  static ref IS_NUMERIC: Regex =
+    Regex::new(r"^-?(?:\d+)(?:[a-k]|(?:\.\d+(?:[eE][+-]?\d+)?))?$").unwrap();
+  static ref DICTIONARY: Mutex<HashMap<String, u64>> = {
+    let json_file = File::open(Path::new("word_index.json")).expect("file not found");
+    let dictionary: HashMap<String, u64> =
+      serde_json::from_reader(json_file).expect("error while reading json");
     Mutex::new(dictionary)
   };
-  static ref TF_GRAPH : Graph = {
-    // Load the computation graph defined by regression.py.
-    let filename = "v3_model_cat8_gpu.pb";
+  static ref TF_GRAPH: Graph = {
+    let filename = "13_class_statement_classification_bilstm.pb";
     println!("-- loading TF model {}", filename);
     let mut graph = Graph::new();
     let mut proto = Vec::new();
-    File::open(filename).unwrap().read_to_end(&mut proto).unwrap();
+    File::open(filename)
+      .unwrap()
+      .read_to_end(&mut proto)
+      .unwrap();
     println!("-- reading in graph data");
-    graph.import_graph_def(&proto, &ImportGraphDefOptions::new()).unwrap();
+    graph
+      .import_graph_def(&proto, &ImportGraphDefOptions::new())
+      .unwrap();
     println!("-- graph imported");
     graph
   };
 }
-
 
 #[derive(Serialize)]
 struct TemplateContext {
@@ -174,15 +178,15 @@ struct LatexmlResponse {
   result: String,
   status: String,
   status_code: u8,
-  log: String
+  log: String,
 }
 
 impl LatexmlRequest {
   fn to_query(&self) -> String {
     let mut query = format!("tex={}&preamble={}&comments={}&post={}&timeout={}&format={}&whatsin={}&whatsout={}&pmml={}&cmml={}&mathtex={}&mathlex={}&nodefaultresources={}",
-      uri_esc(&self.tex), uri_esc(&self.preamble), uri_esc(&self.comments), 
+      uri_esc(&self.tex), uri_esc(&self.preamble), uri_esc(&self.comments),
       uri_esc(&self.post), uri_esc(&self.timeout), uri_esc(&self.format),
-       uri_esc(&self.whatsin), uri_esc(&self.whatsout), uri_esc(&self.pmml), 
+       uri_esc(&self.whatsin), uri_esc(&self.whatsout), uri_esc(&self.pmml),
        uri_esc(&self.cmml), uri_esc(&self.mathtex), uri_esc(&self.mathlex), uri_esc(&self.nodefaultresources));
     for p in self.preload.iter() {
       query.push('&');
@@ -221,10 +225,9 @@ fn latexml_call(params: Json<LatexmlRequest>) -> LatexmlResponse {
   let payload = params.into_inner().to_query();
   let payload_len = payload.len();
 
-  let client : Client<HttpsConnector<HttpConnector>> = Client::builder()
-    .build::<_, hyper::Body>(HttpsConnector::new(4).expect("TLS initialization failed"));
+  let client: Client<HttpConnector> = Client::new();
 
-  let url: hyper::Uri = "https://latexml.mathweb.org/convert".parse().unwrap();
+  let url: hyper::Uri = "http://latexml.mathweb.org/convert".parse().unwrap();
 
   let mut req = Request::builder()
     .uri(url)
@@ -232,15 +235,16 @@ fn latexml_call(params: Json<LatexmlRequest>) -> LatexmlResponse {
     .body(Body::from(payload))
     .unwrap();
 
-  req
-    .headers_mut()
-    .insert(CONTENT_TYPE, HeaderValue::from_static("application/x-www-form-urlencoded"));
+  req.headers_mut().insert(
+    CONTENT_TYPE,
+    HeaderValue::from_static("application/x-www-form-urlencoded"),
+  );
   req.headers_mut().insert(
     CONTENT_LENGTH,
     HeaderValue::from_str(&payload_len.to_string()).unwrap(),
   );
 
-  let mut res_data : Vec<u8> = Vec::new();
+  let mut res_data: Vec<u8> = Vec::new();
   let mut core = Core::new().unwrap();
   {
     let work = client.request(req).and_then(|res| {
@@ -249,15 +253,17 @@ fn latexml_call(params: Json<LatexmlRequest>) -> LatexmlResponse {
         Ok(())
       })
     });
-    core.run(work).unwrap();
+    if let Err(e) = core.run(work) {
+      println!("-- error in latexml request: {:?}", e);
+    }
   }
-  serde_json::from_str(
-    str::from_utf8(res_data.as_slice()).unwrap_or("")
-  ).unwrap()
+  let data_str: &str = str::from_utf8(res_data.as_slice()).unwrap_or("");
+  // println!("-- data_str: {:?}", data_str);
+  serde_json::from_str(data_str).unwrap()
 }
 
-fn llamapun_text_indexes(xml: &str) -> Vec<f32> {
-  let corpus_placeholder : Corpus = Corpus {
+fn llamapun_text_indexes(xml: &str) -> (Vec<String>, Vec<u64>) {
+  let corpus_placeholder: Corpus = Corpus {
     path: "/tmp".to_string(),
     ..Corpus::default()
   };
@@ -265,55 +271,32 @@ fn llamapun_text_indexes(xml: &str) -> Vec<f32> {
     path: "/tmp".to_string(),
     dom: corpus_placeholder.html_parser.parse_string(xml).unwrap(),
     corpus: &corpus_placeholder,
-    dnm: None
+    dnm: None,
   };
   let mut context = Context::new(&document.dom).unwrap();
-  let mut words : Vec<f32> = Vec::new();
+  let mut words: Vec<String> = Vec::new();
+  let mut word_indexes: Vec<u64> = Vec::new();
 
   // use only the first paragraph for this demo
   if let Some(mut paragraph) = document.paragraph_iter().next() {
-    // we need to tokenize, fish out math lexemes, and map each word to its numeric index (or drop if unknown)
+    // we need to tokenize, fish out math lexemes, and map each word to its numeric index (or drop
+    // if unknown)
     'sentences: for mut sentence in paragraph.iter() {
       for word in sentence.simple_iter() {
         if !word.range.is_empty() {
-          let word_string = word
-            .range
-            .get_plaintext()
-            .chars()
-            .filter(|c| c.is_alphanumeric()) // drop apostrophes, other noise?
-            .collect::<String>()
-            .to_lowercase();
-          if word_string.len() > MAX_WORD_LENGTH {
-            // Using a more aggressive normalization, large words tend to be conversion
-            // errors with lost whitespace - drop the entire paragraph when this occurs.
-            break 'sentences;
-          }
-          let mut word_str: &str = &word_string;
-          // Note: the formula and citation counts are an approximate lower bound, as
-          // sometimes they are not cleanly tokenized, e.g. $k$-dimensional
-          // will be the word string "mathformula-dimensional"
-          if word_string.contains("mathformula") {
-            for lexeme in dnm::node::lexematize_math(word.range.get_node(), &mut context).split(" ") {
-              if !lexeme.is_empty() {
-                // if word is in the dictionary, record its index
-                if let Some(idx) = DICTIONARY.lock().unwrap().get(lexeme) {
-                  // println!("{}: {}", lexeme, idx);
-                  words.push(INDEX_FROM+(*idx as f32));
-                }
-              }
-            }
-            word_str = "";
-          } else if word_string.contains("citationelement") {
-            word_str = "citationelement";
-          } else if IS_NUMERIC.is_match(&word_string) {
-            word_str = "NUM";
-          }
-
-          if !word_str.is_empty() {
+          let word_string =
+            match data_helpers::ams_normalize_word_range(&word.range, &mut context, false) {
+              Ok(w) => w,
+              Err(_) => {
+                break 'sentences;
+              },
+            };
+          for lexeme in word_string.split(' ') {
             // if word is in the dictionary, record its index
-            if let Some(idx) = DICTIONARY.lock().unwrap().get(word_str) {
-              // println!("{}: {}", word_str, idx);
-              words.push(INDEX_FROM+(*idx as f32));
+            if let Some(idx) = DICTIONARY.lock().unwrap().get(lexeme) {
+              // println!("{}: {}", lexeme, idx);
+              words.push(lexeme.to_string());
+              word_indexes.push(*idx);
             }
           }
         }
@@ -322,63 +305,42 @@ fn llamapun_text_indexes(xml: &str) -> Vec<f32> {
     // println!("Words: {:?}", words);
     // println!("Word count: {:?}", words.len());
   }
-  words
+  (words, word_indexes)
 }
 
-// Version 2:
-// #[derive(Debug, Serialize)]
-// struct Classification {
-//   acknowledgement: f32,
-//   // algorithm: f32,
-//   // caption: f32,
-//   definition: f32, 
-//   example: f32,
-//   theorem: f32,
-//   problem: f32,
-//   proof: f32, 
-// }
-
-
-// impl From<Tensor<f32>> for Classification {
-//   fn from(t: Tensor<f32>) -> Classification {
-//     Classification {
-//       acknowledgement: t[0],
-//       //algorithm: t[1],
-//       // caption: t[0],
-//       definition: t[1],
-//       example: t[2],
-//       theorem: t[3],
-//       problem: t[4],
-//       proof: t[5],
-//     }
-//   }
-// }
-
-// Version 3:
-#[derive(Debug, Serialize)]
-struct Classification {
+#[derive(Debug, Clone, Serialize)]
+pub struct Classification {
+  r#abstract: f32,
   acknowledgement: f32,
-  proposition: f32,
-  definition: f32, 
+  conclusion: f32,
+  definition: f32,
   example: f32,
   introduction: f32,
+  keywords: f32,
+  proof: f32,
+  proposition: f32,
   problem: f32,
-  proof: f32, 
   related_work: f32,
+  remark: f32,
+  result: f32,
 }
-
 
 impl From<Tensor<f32>> for Classification {
   fn from(t: Tensor<f32>) -> Classification {
     Classification {
-      acknowledgement: t[0],
-      proposition: t[1],
-      definition: t[2],
-      example: t[3],
-      introduction: t[4],
-      problem: t[5],
-      proof: t[6],
-      related_work: t[7]
+      r#abstract: t[0],
+      acknowledgement: t[1],
+      conclusion: t[2],
+      definition: t[3],
+      example: t[4],
+      introduction: t[5],
+      keywords: t[6],
+      proof: t[7],
+      proposition: t[8],
+      problem: t[9],
+      related_work: t[10],
+      remark: t[11],
+      result: t[12],
     }
   }
 }
@@ -395,66 +357,83 @@ struct Benchmark {
 struct ClassificationResponse {
   latexml: Option<LatexmlResponse>,
   classification: Option<Classification>,
+  plaintext: Option<String>,
+  embedding: Option<Vec<u64>>,
   benchmark: Benchmark,
 }
 
-
-fn classify(mut indexes: Vec<f32>) -> Result<Classification,Box<Error>> {
+fn pad_indexes(mut indexes: Vec<u64>) -> Vec<u64> {
   indexes.truncate(PARAGRAPH_SIZE);
   let padding = PARAGRAPH_SIZE - indexes.len();
   if padding > 0 {
     for _ in 0..padding {
-      indexes.push(0.0);
+      indexes.push(0);
     }
   }
-  
-  let mut session = Session::new(&SessionOptions::new(), &TF_GRAPH)?;
-  println!("Session created");
+  indexes
+}
 
-  // Grab the data out of the session.
-  let input_tensor = Tensor::new(&[1,480]).with_values(indexes.as_slice())?;
-  let mut output_step = SessionRunArgs::new();
+cached! {
+  CLASSIFY;
+  fn classify(indexes: Vec<u64>) -> Classification = {
+    let session = Session::new(&SessionOptions::new(), &TF_GRAPH).unwrap();
+    println!("Session created");
+    // println!("will classify: {:?}", indexes);
 
-  let op_embed = TF_GRAPH.operation_by_name_required("embedding_1_input")?;
-  let op_softmax = TF_GRAPH.operation_by_name_required("dense_1/Softmax")?;
-  output_step.add_feed(&op_embed, 0, &input_tensor);
-  println!("feed added.");
+    // Grab the data out of the session.
+    let indexes_f32 : Vec<f32> = indexes.iter().map(|element| *element as f32).collect();
+    let input_tensor = Tensor::new(&[1, PARAGRAPH_SIZE as u64]).with_values(indexes_f32.as_slice()).unwrap();
+    let mut output_step = SessionRunArgs::new();
 
-  let softmax_fetch_token = output_step.request_fetch(&op_softmax, 0);
-  println!("sofmtax requested. running session");
+    let op_embed = TF_GRAPH.operation_by_name_required("embedding_1_input").unwrap();
+    let op_softmax = TF_GRAPH.operation_by_name_required("dense_1/Softmax").unwrap();
+    output_step.add_feed(&op_embed, 0, &input_tensor);
+    println!("feed added.");
 
-  session.run(&mut output_step)?;
+    let softmax_fetch_token = output_step.request_fetch(&op_softmax, 0);
+    println!("softmax requested. running session");
 
-  println!("session run completed. Obtaining prediction.");
-  // Check our results.
-  let prediction : Tensor<f32>  = output_step.fetch(softmax_fetch_token)?;
-  
-  Ok(prediction.into())
+    session.run(&mut output_step).unwrap();
+
+    println!("session run completed. Obtaining prediction.");
+    // Check our results.
+    let prediction: Tensor<f32> = output_step.fetch(softmax_fetch_token).unwrap();
+
+    let prediction_classification : Classification = prediction.into();
+    prediction_classification
+  }
 }
 
 #[post("/process", format = "application/json", data = "<req>")]
-fn process(req: Json<LatexmlRequest>) -> content::Json<String> { 
+fn process(req: Json<LatexmlRequest>) -> content::Json<String> {
   let start = Instant::now();
   // 1. obtain HTML5 via latexml
   let mut res = ClassificationResponse {
     latexml: None,
-    benchmark: Benchmark { latexml: 0, llamapun: 0, tensorflow: 0, total: 0},
+    benchmark: Benchmark {
+      latexml: 0,
+      llamapun: 0,
+      tensorflow: 0,
+      total: 0,
+    },
     classification: None,
+    plaintext: None,
+    embedding: None,
   };
   let latexml_start = Instant::now();
   let latexml_response = latexml_call(req);
   res.benchmark.latexml = latexml_start.elapsed().as_millis();
   // 2. obtain word indexes of the first paragraph, via llamapun
   let llamapun_start = Instant::now();
-  let word_indexes = llamapun_text_indexes(&latexml_response.result);
+  let (words, word_indexes) = llamapun_text_indexes(&latexml_response.result);
   res.latexml = Some(latexml_response);
   res.benchmark.llamapun = llamapun_start.elapsed().as_millis();
   // 3. obtain classification prediction via tensorflow
   let tensorflow_start = Instant::now();
-  match classify(word_indexes) { 
-    Ok(prediction) => {res.classification = Some(prediction);},
-    Err(e) => println!("classification failed: {:?}", e)
-  };
+  res.plaintext = Some(words.join(" "));
+  let padded_indexes = pad_indexes(word_indexes);
+  res.embedding = Some(padded_indexes.clone());
+  res.classification = Some(classify(padded_indexes));
   res.benchmark.tensorflow = tensorflow_start.elapsed().as_millis();
   res.benchmark.total = start.elapsed().as_millis();
   // 4. package and respond
@@ -478,8 +457,13 @@ fn main() {
   assert!(TF_GRAPH.graph_def().is_ok());
 
   println!("-- initializing llamapun globals");
-  llamapun_text_indexes("<html><body><div class=\"ltx_para\"><p class=\"ltx_p\">mock</p></div></body></html>");
-  println!("-- preloading completed in {} seconds.",preload.elapsed().as_secs());
+  llamapun_text_indexes(
+    "<html><body><div class=\"ltx_para\"><p class=\"ltx_p\">mock</p></div></body></html>",
+  );
+  println!(
+    "-- preloading completed in {} seconds.",
+    preload.elapsed().as_secs()
+  );
   println!("-- launching Rocket web service");
-  rocket().launch(); 
+  rocket().launch();
 }

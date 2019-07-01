@@ -1,5 +1,44 @@
 function load_examples() {
   var examples = new Array();
+  examples['abstract_1'] = [
+    "For many physical systems the transition from a stationary solution to sustained small amplitude oscillations corresponds to a Hopf bifurcation. For systems involving impacts, thresholds, switches, ",
+    "or other abrupt events, however, this transition can be achieved in fundamentally different ways. This paper reviews 20 such `Hopf-like' bifurcations for two-dimensional ODE systems with ",
+    "state-dependent switching rules. The bifurcations include boundary equilibrium bifurcations, the collision or change of stability of equilibria or folds on switching manifolds, and limit ",
+    "cycle creation via hysteresis or time delay. In each case a stationary solution changes stability and possibly form, and emits one limit cycle. Each bifurcation is analysed quantitatively ",
+    "in a general setting: we identify quantities that govern the onset, criticality, and genericity of the bifurcation, and determine scaling laws for the period and amplitude of the resulting limit cycle. ",
+    "Complete derivations based on asymptotic expansions of Poincar\\'e maps are provided. Many of these are new, done previously only for piecewise-linear systems. The bifurcations are collated and ",
+    "compared so that dynamical observations can be matched to geometric mechanisms responsible for the creation of a limit cycle. The results are illustrated with impact oscillators, relay control, ",
+    "automated balancing control, predator-prey systems, ocean circulation, and the McKean and Wilson-Cowan neuron models.",
+    "% Source: 1905.01329"].join('\n');
+  examples['abstract_2'] = [
+    "Are cryptocurrency traders driven by a desire to invest in a new asset class to diversify their portfolio or are they merely seeking to increase their levels of risk ? To answer this question, ",
+    "we use individual - level brokerage data and study their behavior in stock trading around the time they engage in their first cryptocurrency trade.We find that when engaging in cryptocurrency ",
+    "trading investors simultaneously increase their risk - seeking behavior in stock trading as they increase their trading intensity and use of leverage.The increase in risk - seeking in stocks ",
+    "is particularly pronounced when volatility in cryptocurrency returns is low, suggesting that their overall behavior is driven by excitement - seeking.",
+    "% Source: 1906.11968"].join('\n');
+  examples['abstract_3'] = [
+    "In recent years, memory - augmented neural networks(MANNs) have shown promising power to enhance the memory ability of neural networks for sequential processing tasks. However, ",
+    "previous MANNs suffer from complex memory addressing mechanism, making them relatively hard to train and causing computational overheads. Moreover, many of them reuse the classical",
+    "RNN structure such as LSTM for memory processing, causing inefficient exploitations of memory information. In this paper, we introduce a novel MANN, the Auto-addressing and ",
+    "Recurrent Memory Integrating Network (ARMIN) to address these issues. The ARMIN only utilizes hidden state ht for automatic memory addressing, and uses a novel RNN cell for refined ",
+    "integration of memory information. Empirical results on a variety of experiments demonstrate that the ARMIN is more light - weight and efficient compared to existing memory networks. ",
+    "Moreover, we demonstrate that the ARMIN can achieve much lower computational overhead than vanilla LSTM while keeping similar performances. Codes are available on this http URL. ",
+    "% Source: 1906.12087"].join('\n');
+  examples['abstract_4'] = [
+    "The quantum walk differs fundamentally from the classical random walk in a number of ways, including its linear spreading and initial condition dependent asymmetries. ",
+    "Using stationary phase approximations, precise asymptotics have been derived for one-dimensional two-state quantum walks, one-dimensional three-state Grover walks, and ",
+    "two-dimensional four-state Grover walks. Other papers have investigated asymptotic behavior of a much larger set of two-dimensional quantum walks and it has been shown ",
+    "that in special cases the regions of polynomial decay can be parameterized. In this paper, we show that these regions of polynomial decay are bounded by algebraic curves ",
+    "which can be explicitly computed. We give examples of these bifurcation curves for a number of two-dimensional quantum walks.",
+    "% Source: 1905.00057"].join('\n');
+  examples['abstract_5'] = [
+    "We look at substructural calculi from a game semantic point of view, guided by certain intuitions about resource conscious and, more specifically, cost conscious reasoning. ",
+    "To this aim, we start with a game, where player I defends a claim corresponding to a (single-conclusion) sequent, while player II tries to refute that claim. Branching rules ",
+    "for additive connectives are modeled by choices of II, while branching for multiplicative connectives leads to splitting the game into parallel subgames, all of which have to ",
+    "be won by player I to succeed. The game comes into full swing by adding cost labels to assumptions, and a corresponding budget. Different proofs of the same end-sequent are ",
+    "interpreted as more or less expensive strategies for I to defend the corresponding claim. This leads to a new kind of labelled calculus, which can be seen as a fragment of ",
+    "SELL(subexponential linear logic). Finally, we generalize the concept of costs in proofs by using a semiring structure, illustrate our interpretation by examples and investigate some proof-theoretical properties.",
+    "% Source: 1906.11742"].join('\n');
   examples['acknowledgement_1'] = [
     "It is a pleasure to thank Martin Schlottmann for his encouragement and in particular for his help in Theorem 1. We are also indebted to Michæl Baake for his interest and insights into this work.",
     "% Source: math0002019"].join('\n');
@@ -17,6 +56,38 @@ function load_examples() {
     "Takayama to our attention and G. Henkin for useful conversations. The third named author expresses its gratitude to Prof. J. Leiterer for excellent working conditions and the",
     "``\\,Graduiertenkolleg Geometrie und Nichtlineare Analysis\\,'', especially Prof. Th. Friedrich, for support.",
     "% source: math0002049"].join("\n");
+
+  examples['conclusion_1'] = [
+    "We present a new dataset of manually curated argument trees, which can open interesting avenues of research in argumentation. We use this dataset to study methods for ",
+    "determining claim stance and relative claim specificity for complex argumentative structures. We find that it is easier to predict stance for claims that have a ",
+    "parent-child relationship, where as relative specificity is more difficult to predict in the same case. For future work, it may be interesting to understand which other ",
+    "models would be effective in claim specificity and stance detection tasks. Besides, developing techniques to incorporate the claim stance and specificity detection models ",
+    "in argument generation to generate more coherent and consistent arguments is another interesting research direction to be explored.",
+    "% source: 1906.11313"].join("\n");
+  examples['conclusion_2'] = [
+    "In this paper, we have investigated cosmological simulations designed to reproduce the environments and large-scale structure relevant for the growth of the first quasars at $z \\geq 6$. ",
+    "In particular, we have focused on the effects of different choices of BH seed mass(a parameter in the SMBH sub-grid model) on the growth history of the SMBH at the early time. ",
+    "To do so, we have applied the technique of constrained Gaussian realizations \\cite{Hoffman1991, vandeWeygaert1996} in order to be able to reconstruct initial conditions to ",
+    "reproduce the large-scale structure of the most massive BHs in \\textsc{BlueTides}, the only cosmological hydrodynamic simulation with a sufficient resolution and a very large ",
+    "volume which makes direct predictions for the first, rare observed quasars \\cite{DiMatteo2017, Ni2018, Tenneti2018}. ",
+    "The first quasars are extremely rare objects and in \\textsc{BlueTides} simulation, $400 h ^ {-1} { \\rm Mpc } $ on a side, there are only $4$ SMBHs with mass $\\sim 10 ^ 9 M_{\\odot} $ by $z = 7$.",
+    "% source: 1906.00242"
+  ].join('\n');
+  examples['conclusion_3'] = [
+    "We studied the problem of differentially private location parameter estimation from a non-asymptotic deviations perspective. In particular, we proposed the first private median estimators that exhibit ",
+    "a leading sub-Gaussian error terms with high probability. Our first estimator uses truncation in order to get high probability control of the smooth sensitivity while the second one avoids truncating ",
+    "the data by first identifying in a privacy-preserving fashion whether the data are in a favorable configuration before releasing a noisy version of the desired output. We showed that differentially ",
+    "private versions of well known sub-Gaussian mean estimators fail to exhibit the optimal deviations of their non private counterparts. A possible explanation for these weaker results for mean estimation ",
+    "is that perhaps one can only expect to obtain sub-Gaussian type deviations for differentially private versions of robust statistics in the sense of \\cite{19}. ",
+    "It would therefore be interesting to extend our methods to other robust statistics beyond the median.",
+    "% source: 1906.11923"
+  ].join('\n');
+  examples['conclusion_4'] = [
+    "We have shown that, in the near future, EMRI GW measurement with space interferometry experiments could place strong constraints on DM models across the particle landscape. ",
+    "The EMRI GW emission will provide model-independent (purely gravitational) tests for DM spikes, which is a prediction of cold collisionless DM models. ",
+    "If such spikes are detected, they will be the most compact DM structures ever known.",
+    "% source: 1906.11845"
+  ].join('\n');
 
   examples['definition_1'] = [
     "\\newcommand{\\MS}{{\\mathcal H}}",
@@ -55,30 +126,17 @@ function load_examples() {
     "% source: 1408.3197"
   ].join('\n');
   examples['definition_3'] = [
-    "The {\\it double affine Hecke algebra}",
-    "${\\mathcal{H}}={\\mathcal{H}}(S;\\mathbf{t};q)$",
-    "is the sub-algebra of $\\hbox{End}_{\\mathbb{C}}({\\mathcal{A}})$",
-    "generated by $\\pi_{\\mathbf{t},q}(H(R;\\mathbf{k}))$ and",
-    "${\\mathcal{A}}$, where the elements in ${\\mathcal{A}}$ are considered as ",
-    "multiplication operators in ",
-    "$\\hbox{End}_{\\mathbb{C}}({\\mathcal{A}})$.",
-    "% source: math0002090"].join('\n');
+    "We define the task of accurate pouring as pouring a requested volume accurately from a source container to a receiving container. ",
+    "The pouring system is a complicated nonlinear time-variant system that can be affected by many factors including factors that change with time and those that are static.",
+    "% source: 1906.12264"].join('\n');
   examples['definition_4'] = [
-    "Let $\\lambda,\\mu\\in \\Lambda$.\\\\",
-    "{\\bf (i)} We write $\\lambda\\leq\\mu$ if",
-    "$\\mu-\\lambda\\in Q^{\\vee,+}$",
-    "\\textup{(}and $\\lambda<\\mu$",
-    "if $\\lambda\\leq\\mu$ and $\\lambda\\not=\\mu$\\textup{)}.\\\\",
-    "{\\bf (ii)} We write $\\lambda\\preceq\\mu$",
-    "if $\\lambda^+<\\mu^+$, or if $\\lambda^+=\\mu^+$ and $\\lambda\\leq\\mu$",
-    "\\textup{(}and $\\lambda\\prec\\mu$ if $\\lambda\\preceq\\mu$ and",
-    "$\\lambda\\not=\\mu$\\textup{)}.",
-    "% source: math0002090"].join('\n');
+    "A strong solution to the Cauchy problem(\\ref{ g4 }) - (\\ref{ g4- 1}) is a continuous function $y: [0, T]\\rightarrow H, $",
+    "which is a.e.differentiable and satisfies(\\ref{ g4 }) a.e.$t\\in (0, T)$ and(\\ref{ g4- 1})$.$",
+    "% source: 1906.11918"].join('\n');
   examples['definition_5'] = [
     "The traditional F-measure or balanced F-score (``$F_1$ score'') is the Harmonic mean of precision and recall:",
     "$$F_1 = \\left(\\frac{\\mathrm{recall}^{-1} + \\mathrm{precision}^{-1}}{2}\\right)^{-1} = 2 \\cdot \\frac{\\mathrm{precision} \\cdot \\mathrm{recall}}{\\mathrm{precision} + \\mathrm{recall}}$$",
     "% source: https://en.wikipedia.org/wiki/F1_score "].join('\n');
-
   examples['example_1'] = [
     "We proceed to compare the proposed method with the standard approach for solving the",
     "linear system in Eq 145. In the examples that follow, we employ test signals of",
@@ -164,12 +222,10 @@ function load_examples() {
     "% source: 1408.2533"
   ].join('\n');
   examples["introduction_4"] = [
-    "Ever since Léon Foucault's first demonstration in Paris a century and a half ago, the pendulum's rate of precession with respect to",
-    "local North has inspired a quest for elegant ways to explain it. `Foucault precession' is a slow rotation of the plane of",
-    "oscillation of the pendulum. It is caused by the rotation of the earth, and its rate depends on geographical latitude.",
-    "This classic experiment is a perennial favorite at science museums and similar venues, apart from its value in teaching",
-    "certain ideas in mathematical physics.",
-    "%source: 1408.3047"
+    "In this work we focus on the task of pouring which is one of the most commonly executed tasks in people's daily lives. ",
+    "In fact, pouring is the second most frequently executed motion in cooking scenarios, with the first place taken ",
+    "by pick-and-place \\cite{paulius2016}, \\cite{8460200}. ",
+    "% source: 1906.12264"
   ].join('\n');
   examples["introduction_5"] = [
     "The paper is structured as follows: we introduce necessary terminology in section 2.1 and technical assumptions on non-classical geometry",
@@ -179,6 +235,19 @@ function load_examples() {
     "the apparent hroizon always lies inside the causal horizon. We comment on the implication for bulk signals coming in from the boundary.",
     "Section 5 contains several theorems qualifying barriers to quantum extremal surfaces, and section 6 discusses the implications for bulk reconstruction.",
     "% source: 1408.3203"
+  ].join('\n');
+
+  examples['keywords_1'] = [
+    "Semantics, Embodied Cognition, fMRI, Music, Natural Language, Machine Learning, Cross-modalRetrieval, Classification",
+    "% source: 1906.11759"
+  ].join('\n');
+  examples['keywords_2'] = [
+    "kernel-based  nonparametrics, bandwidth  selection, bias  correction,  robust  infer-ence, R, Stata.",
+    "% source: 1906.00198"
+  ].join('\n');
+  examples['keywords_3'] = [
+    "clustering, cluster analysis, clustering validity, index optimization",
+    "% source: 1906.00349"
   ].join('\n');
 
   examples['problem_1'] = [
@@ -334,33 +403,63 @@ function load_examples() {
 
 
   examples["related_work_1"] = [
-    "Two widely popular classes of keyword extraction techniques were considered for extraction/ranking of skill sets in the job postings.",
-    "One class of keyword extraction/ranking technique is based on keyword matching or Vector Space models with basic TF-IDF weighting \\cite{1}.",
-    "The TF-IDF weighting is obtained by using only the content of the document itself. Then several similarity measurements were used to compare",
-    "the similarity of the two documents based on their feature vectors \\cite{2}. The other class of keyword extraction/ranking technique is based",
-    "on using context information to improve keyword extraction. Recently, there has been lot of work on developing different machine learning methods",
-    "to make use of the context in the document \\cite{3},\\cite{28}. Zhang et al. \\cite{4} discusses the use of support vector machines for",
-    "keyword extraction from documents using both the local and global context. There are number of techniques developed to use local and global context",
-    "in keyword extraction \\cite{3}, \\cite{4}, \\cite{5}.",
-    "% source: 1709.05050"
+    "Our work is closely related to procedural extraction, however we focus on conversational text from CTA interviews which is in a low-resource setting and no sentence-by-sentence label is available.",
+    "% source: 1906.11384"
   ].join('\n');
   examples["related_work_2"] = [
-    "Prior work on accelerating video segmentation focuses on reducing the frequency of feature computations across frames.",
-    "Schemes have been proposed to reuse cached feature computations from previous frames as is \cite{CC}, and to propagate features forward",
-    "from designated keyframes via warping with optical flow estimates (Zhu, et al., \cite{DFF}). While the latter approach arguably supersedes",
-    "the former by allowing feature maps to evolve across frames, it suffers from one key shortcoming: features can be warped forward only as long",
-    "as frame-to-frame changes consist primarily of internal displacements. Other forms of temporal evolution, such as the appearance of new objects,",
-    "and simple perspective changes, such as camera pans, render past feature maps obsolete. In settings with complex dynamics, such as the urban",
-    "environments captured in the Cityscapes and CamVid datasets \cite{Cityscapes, CamVid}, or in footage with fast ego motion, features must be",
-    "recomputed frequently, limiting the attainable speedup.",
-    "%source: 1803.07742"
+    "\\textbf{ Argumentation Generation.} Previous work in argument generation has focused on generating summaries of opinionated text \\cite{N16-1007}, rebuttals for a given argument \\cite{W00-1406}, ",
+    "paraphrases from predicate/argument structure \\cite{W03-1601}, generation via sentence retrieval \cite{ P15 - 4019 } and developing argumentative dialogue agents \\cite{W18-5215,DBLP:journals/corr/abs-1709-03167}. ",
+    "The work on developing argumentative dialogue agents, in particular, has employed mostly social media data such as IAC \\cite{Walker2012ACF} to design retrieval-based or generative models ",
+    "to make argumentative responses to the users.These models, however, employ very limited context in generating the claims, and there is no notion of generating a claim with a particular stance ",
+    "or the appropriate level of specificity within the context. Furthermore, these models are trained on social media conversations, which can be noisy, and as noted by \\cite{DBLP:journals/corr/abs-1709-03167}, ",
+    "many sentences either do not express an argument or cannot be understood out of context. In contrast, our dataset explicitly provides the sequence of claims in an argument path that leads ",
+    "to any particular claim, which can enable an argument generation system to generate relevant claims, with a particular stance and at the right level of specificity. Recent work by \\cite{P18-1021} ",
+    "studies the task of generating claims of a different stance for a given statement, however their context is limited to the given statement and they do not take specificity into account.",
+    "% source: 1906.11313"
   ].join('\n');
   examples["related_work_3"] = [
     "The closely related work is split among three major groups: generic effect systems, algebraic",
     "models of sequential computation, and concrete effect systems",
-    " % source: 1808.02010"
+    "% source: 1808.02010"
   ].join('\n');
 
+  examples['remark_1'] = [
+    "\\def\\EF{\\Phi}",
+    "\\def\\smallconst{c}",
+    "\\def\\capconst{K}",
+    "For Diophantine fields $\\beta(\\EF) = 0$ such that the condition $\\beta(\\EF) <\\smallconst_0\\kappa ",
+    "/\\capconst_a$ is trivially fulfilled for $\\capconst_a > 0$.In contrast, for $\\EF / (2\\pi) $ Liouville one has $\\beta(\\EF) > 0$.",
+    "% source: 1906.11931"
+  ].join('\n');
+  examples['remark_2'] = [
+    "We notice that in the proof of Theorem \\ref{thm:h} and hence in the case of Theorem \\ref{thm:i} also, there are ",
+    "plenty of mistakes made by the authors Waghmore-Anand\\cite{16}.",
+    "We mention below few of them.",
+    "% source: 1906.12046"
+  ].join('\n');
+  examples['remark_3'] = [
+    "Importantly, note that $c$ is independent of the $\\epsilon_j$’s."
+  ];
+
+  examples['result_1'] = [
+    "The measurements were carried out during 2.5 days of live time by brief 4 hour runs in order to monitor the time stability of the data acquisition system the obtained energy spectra of the ",
+    "si li detector in the range $(2 \\backslash 3)$ kev are shown in Fig \\ref{ fig } while the spectrum measured in the coincidence with signals of the veto scintillators does not contain ",
+    "any peculiarity one can clearly identify several peaks in the spectrum of uncorrelated events "
+  ].join('\n');
+  examples['result_2'] = [
+    "We selected datasets relative to HD189733b and HD209458b which are publicly available on the ESO archive.These  are part of 289.C - 5030(A) and 383.C - 0045(A) programs(PI Snellen, I.)(Fig.\\ref{fig: HD189}",
+    "and \\ref{fig:HD209} panels(a)).The observations have been recorded by using VLT/CRIRES at the highest resolution available(R$ = 100, 000$) through the $0''.2$ slit. ",
+    "Both datasets cover a narrow wavelength range, i.e.$2287.54 - 2345.34\\ $nm and $2291.79 - 2349.25\\ $nm respectively, with three gaps($\\sim 200$ pixels per gap) due to ",
+    "the physical separation of CRIRES' detectors. Both datasets have been recorded with the nodding method ABBA for a better background subtraction \\cite{Snellen2010, Brogi2016}. ",
+    "The steps of the analysis process are represented in Fig. \\ref{fig:workflow} and they are described in following sections.",
+    "% source: 1906.11218"
+  ].join('\n');
+  examples['result_3'] = [
+    "{ The isochrone fitting was carried out with the statistical Markov chain Monte Carlo method. ",
+    "We derive an accurate distance of d$_{ \\odot } = 8.75\\pm 0.12$ kpc and a reddening of E(B - V)$ = 0.81 ^ {+ 0.02} _{ -0.02 } $.",
+    "The best-fitting BaSTI isochrones correspond to an age of $12.70 ^ {+ 0.72}_{ -0.69 } $ Gyr",
+    "and a metallicity of[Fe / H]$ = -1.11 ^ {+ 0.03}_{ -0.03 } $.}",
+  ].join('\n');
   // examples['algorithm_1'] = [
   //   "$\\bullet$ step 2",
   //   "Determining the edges of the follower set graph lines 2-6 in the pseudocode.",
