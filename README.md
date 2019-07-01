@@ -6,7 +6,7 @@ https://corpora.mathweb.org/classify_paragraph
 ### Method
  * [latexml](https://github.com/brucemiller/LaTeXML) converts the source into an HTML5 document
  * [llamapun](https://github.com/KWARC/llamapun) tokenizes the first paragraph into a plain-text representation with sub-formula lexemes
- * [tensorflow](https://github.com/tensorflow/rust) executes a pre-trained BiLSTM model to obtain the likelihoods of 6 potential amsthm classes
+ * [tensorflow](https://github.com/tensorflow/rust) executes a pre-trained BiLSTM model with 13 classification targets
  * served as a [rocket](https://rocket.rs/) web service
  
 ### Details
