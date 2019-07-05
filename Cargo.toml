@@ -24,5 +24,5 @@ url  = "1.7.1"
 libxml = "0.2.12"
 lazy_static = "1.2.0"
 regex = "1.0.0"
-cached = "0.8.0"
+cached = "0.9.0"
 tensorflow = { version = "0.13.0"} # features = ["tensorflow_gpu"] }
