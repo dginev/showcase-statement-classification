@@ -227,7 +227,7 @@ fn latexml_call(params: Json<LatexmlRequest>) -> LatexmlResponse {
 
   let client: Client<HttpConnector> = Client::new();
 
-  let url: hyper::Uri = "http://latexml.mathweb.org/convert".parse().unwrap();
+  let url: hyper::Uri = "http://localhost:8080/convert".parse().unwrap();
 
   let mut req = Request::builder()
     .uri(url)
