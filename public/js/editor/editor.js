@@ -14,6 +14,26 @@ function show_result() {
   $('#plaintext').show();
   $('#embedding').show();
 
+  var cssid = 'latexml_css';  // you could encode the css path itself to generate id..
+  if (!document.getElementById(cssid)) {
+    var head = document.getElementsByTagName('head')[0];
+    var link = document.createElement('link');
+    link.id = cssid;
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = 'https://latexml.mathweb.org/css/external/LaTeXML.css';
+    link.media = 'all';
+    head.appendChild(link);
+
+    var link = document.createElement('link');
+    link.id = "latexml_report_css";
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = 'https://latexml.mathweb.org/css/external/ltx-report.css';
+    link.media = 'all';
+    head.appendChild(link);
+  }
+
   if (!canMathML && typeof MathJax !== "undefined") {
     MathJax
       .Hub
