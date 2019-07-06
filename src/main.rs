@@ -16,8 +16,6 @@ use std::str;
 use std::sync::Mutex;
 use std::time::Instant;
 
-// use std::cell::RefCell;
-// use std::error::Error;
 use std::fs::File;
 use std::io::Read;
 use std::result::Result;
@@ -30,14 +28,6 @@ use regex::Regex;
 // use tensorflow::Code;
 use tensorflow::ImportGraphDefOptions;
 use tensorflow::{Graph, Session, SessionOptions, SessionRunArgs, Tensor};
-
-use hyper::client::HttpConnector;
-use hyper::header::{HeaderValue, CONTENT_LENGTH, CONTENT_TYPE};
-use hyper::rt::{Future, Stream};
-use hyper::{Body, Method};
-use hyper::{Client, Request};
-// use hyper_tls::HttpsConnector;
-use tokio_core::reactor::Core;
 
 use rocket::fairing::{Fairing, Info, Kind};
 use rocket::http::Header;
@@ -182,84 +172,37 @@ struct LatexmlResponse {
 }
 
 impl LatexmlRequest {
-  fn to_query(&self) -> String {
-    let mut query = format!("tex={}&preamble={}&comments={}&post={}&timeout={}&format={}&whatsin={}&whatsout={}&pmml={}&cmml={}&mathtex={}&mathlex={}&nodefaultresources={}",
-      uri_esc(&self.tex), uri_esc(&self.preamble), uri_esc(&self.comments),
-      uri_esc(&self.post), uri_esc(&self.timeout), uri_esc(&self.format),
-       uri_esc(&self.whatsin), uri_esc(&self.whatsout), uri_esc(&self.pmml),
-       uri_esc(&self.cmml), uri_esc(&self.mathtex), uri_esc(&self.mathlex), uri_esc(&self.nodefaultresources));
+  fn to_pairs(&self) -> Vec<(&str, &str)> {
+    let mut query = Vec::new();
+    query.push(("tex", self.tex.as_str()));
+    query.push(("preamble", self.preamble.as_str()));
+    query.push(("comments", self.comments.as_str()));
+    query.push(("post", self.post.as_str()));
+    query.push(("timeout", self.timeout.as_str()));
+    query.push(("format", self.format.as_str()));
+    query.push(("whatsin", self.whatsin.as_str()));
+    query.push(("whatsout", self.whatsout.as_str()));
+    query.push(("pmml", self.pmml.as_str()));
+    query.push(("cmml", self.cmml.as_str()));
+    query.push(("mathtex", self.mathtex.as_str()));
+    query.push(("mathlex", self.mathlex.as_str()));
+    query.push(("nodefaultresources", &self.nodefaultresources));
     for p in self.preload.iter() {
-      query.push('&');
-      query.push_str("preload=");
-      query.push_str(&uri_esc(&p));
+      query.push(("preload", &p));
     }
     query
   }
 }
 
-fn uri_esc(param: &str) -> String {
-  let mut param_encoded: String =
-    url::percent_encoding::utf8_percent_encode(param, url::percent_encoding::DEFAULT_ENCODE_SET)
-      .collect::<String>();
-  // TODO: This could/should be done faster by using lazy_static!
-  for &(original, replacement) in &[
-    (":", "%3A"),
-    ("/", "%2F"),
-    ("\\", "%5C"),
-    ("$", "%24"),
-    (".", "%2E"),
-    ("!", "%21"),
-    ("@", "%40"),
-  ] {
-    param_encoded = param_encoded.replace(original, replacement);
-  }
-  // if param_pure != param_encoded {
-  //   println!("Encoded {} to {:?}", param_pure, param_encoded);
-  // } else {
-  //   println!("No encoding needed: {:?}", param_pure);
-  // }
-  param_encoded
-}
-
 fn latexml_call(params: Json<LatexmlRequest>) -> LatexmlResponse {
-  let payload = params.into_inner().to_query();
-  let payload_len = payload.len();
-
-  let client: Client<HttpConnector> = Client::new();
-
-  let url: hyper::Uri = "http://localhost:8080/convert".parse().unwrap();
-
-  let mut req = Request::builder()
-    .uri(url)
-    .method(Method::POST)
-    .body(Body::from(payload))
+  let client = reqwest::Client::new();
+  let mut res = client
+    .post("http://127.0.0.1:8080/convert")
+    .form(&params.to_pairs())
+    .send()
     .unwrap();
-
-  req.headers_mut().insert(
-    CONTENT_TYPE,
-    HeaderValue::from_static("application/x-www-form-urlencoded"),
-  );
-  req.headers_mut().insert(
-    CONTENT_LENGTH,
-    HeaderValue::from_str(&payload_len.to_string()).unwrap(),
-  );
-
-  let mut res_data: Vec<u8> = Vec::new();
-  let mut core = Core::new().unwrap();
-  {
-    let work = client.request(req).and_then(|res| {
-      res.into_body().for_each(|chunk| {
-        res_data.extend_from_slice(&*chunk.into_bytes());
-        Ok(())
-      })
-    });
-    if let Err(e) = core.run(work) {
-      println!("-- error in latexml request: {:?}", e);
-    }
-  }
-  let data_str: &str = str::from_utf8(res_data.as_slice()).unwrap_or("");
-  // println!("-- data_str: {:?}", data_str);
-  serde_json::from_str(data_str).unwrap()
+  let latexml_res: LatexmlResponse = res.json().unwrap();
+  latexml_res
 }
 
 fn llamapun_text_indexes(xml: &str) -> (Vec<String>, Vec<u64>) {
