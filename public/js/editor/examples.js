@@ -137,6 +137,10 @@ function load_examples() {
     "The traditional F-measure or balanced F-score (``$F_1$ score'') is the Harmonic mean of precision and recall:",
     "$$F_1 = \\left(\\frac{\\mathrm{recall}^{-1} + \\mathrm{precision}^{-1}}{2}\\right)^{-1} = 2 \\cdot \\frac{\\mathrm{precision} \\cdot \\mathrm{recall}}{\\mathrm{precision} + \\mathrm{recall}}$$",
     "% source: https://en.wikipedia.org/wiki/F1_score "].join('\n');
+  examples['definition_6'] = [
+    "A \\emph{monomial} is a polynomial with exactly one nonzero coefficient. Similarly, a ",
+    "\\emph{binomial} is a polynomial with exactly two nonzero coefficients, and a \\emph{trinomial} is a polynomial with exactly three nonzero coefficients.",
+    "% source: https://planetmath.org/polynomialring"].join('\n');
   examples['example_1'] = [
     "We proceed to compare the proposed method with the standard approach for solving the",
     "linear system in Eq 145. In the examples that follow, we employ test signals of",
