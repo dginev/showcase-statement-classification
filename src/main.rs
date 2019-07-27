@@ -6,8 +6,6 @@ use serde::{Deserialize, Serialize};
 
 #[macro_use]
 extern crate rocket;
-#[macro_use]
-extern crate cached;
 
 use std::collections::HashMap;
 use std::io::Cursor;
@@ -34,7 +32,7 @@ use rocket::http::Header;
 use rocket::response::content;
 use rocket::response::status::NotFound;
 use rocket::response::NamedFile;
-
+use rocket::State;
 use rocket_contrib::json::Json;
 use rocket_contrib::templates::Template;
 
@@ -316,39 +314,41 @@ fn pad_indexes(mut indexes: Vec<u64>) -> Vec<u64> {
   indexes
 }
 
-cached! {
-  CLASSIFY;
-  fn classify(indexes: Vec<u64>) -> Classification = {
-    let session = Session::new(&SessionOptions::new(), &TF_GRAPH).unwrap();
-    println!("Session created");
-    // println!("will classify: {:?}", indexes);
+fn classify(session: State<Session>, indexes: Vec<u64>) -> Classification {
+  println!("Session created");
+  // println!("will classify: {:?}", indexes);
 
-    // Grab the data out of the session.
-    let indexes_f32 : Vec<f32> = indexes.iter().map(|element| *element as f32).collect();
-    let input_tensor = Tensor::new(&[1, PARAGRAPH_SIZE as u64]).with_values(indexes_f32.as_slice()).unwrap();
-    let mut output_step = SessionRunArgs::new();
+  // Grab the data out of the session.
+  let indexes_f32: Vec<f32> = indexes.iter().map(|element| *element as f32).collect();
+  let input_tensor = Tensor::new(&[1, PARAGRAPH_SIZE as u64])
+    .with_values(indexes_f32.as_slice())
+    .unwrap();
+  let mut output_step = SessionRunArgs::new();
 
-    let op_embed = TF_GRAPH.operation_by_name_required("embedding_1_input").unwrap();
-    let op_softmax = TF_GRAPH.operation_by_name_required("dense_1/Softmax").unwrap();
-    output_step.add_feed(&op_embed, 0, &input_tensor);
-    println!("feed added.");
+  let op_embed = TF_GRAPH
+    .operation_by_name_required("embedding_1_input")
+    .unwrap();
+  let op_softmax = TF_GRAPH
+    .operation_by_name_required("dense_1/Softmax")
+    .unwrap();
+  output_step.add_feed(&op_embed, 0, &input_tensor);
+  println!("feed added.");
 
-    let softmax_fetch_token = output_step.request_fetch(&op_softmax, 0);
-    println!("softmax requested. running session");
+  let softmax_fetch_token = output_step.request_fetch(&op_softmax, 0);
+  println!("softmax requested. running session");
 
-    session.run(&mut output_step).unwrap();
+  session.run(&mut output_step).unwrap();
 
-    println!("session run completed. Obtaining prediction.");
-    // Check our results.
-    let prediction: Tensor<f32> = output_step.fetch(softmax_fetch_token).unwrap();
+  println!("session run completed. Obtaining prediction.");
+  // Check our results.
+  let prediction: Tensor<f32> = output_step.fetch(softmax_fetch_token).unwrap();
 
-    let prediction_classification : Classification = prediction.into();
-    prediction_classification
-  }
+  let prediction_classification: Classification = prediction.into();
+  prediction_classification
 }
 
 #[post("/process", format = "application/json", data = "<req>")]
-fn process(req: Json<LatexmlRequest>) -> content::Json<String> {
+fn process(session: State<Session>, req: Json<LatexmlRequest>) -> content::Json<String> {
   let start = Instant::now();
   // 1. obtain HTML5 via latexml
   let mut res = ClassificationResponse {
@@ -376,7 +376,7 @@ fn process(req: Json<LatexmlRequest>) -> content::Json<String> {
   res.plaintext = Some(words.join(" "));
   let padded_indexes = pad_indexes(word_indexes);
   res.embedding = Some(padded_indexes.clone());
-  res.classification = Some(classify(padded_indexes));
+  res.classification = Some(classify(session, padded_indexes));
   res.benchmark.tensorflow = tensorflow_start.elapsed().as_millis();
   res.benchmark.total = start.elapsed().as_millis();
   // 4. package and respond
@@ -399,6 +399,12 @@ fn main() {
   println!("-- instantiating TensorFlow graph");
   assert!(TF_GRAPH.graph_def().is_ok());
 
+  // Crucially use the SAME tensorflow session throughout the lifetime of the server,
+  // as instantiating a new session implies graph-initialization costs (~15 seconds) on the first
+  // .run call. Reusing an already initialized session drops the 15 second overhead, and a
+  // classification call becomes ~0.2 seconds
+  let session = Session::new(&SessionOptions::new(), &TF_GRAPH).unwrap();
+
   println!("-- initializing llamapun globals");
   llamapun_text_indexes(
     "<html><body><div class=\"ltx_para\"><p class=\"ltx_p\">mock</p></div></body></html>",
@@ -408,5 +414,5 @@ fn main() {
     preload.elapsed().as_secs()
   );
   println!("-- launching Rocket web service");
-  rocket().launch();
+  rocket().manage(session).launch();
 }
