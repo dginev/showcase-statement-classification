@@ -11,7 +11,8 @@ https://corpora.mathweb.org/classify_paragraph
  
 ### Details
 
-The current deployed model is a Keras **BiLSTM(128)→BiLSTM(64)→LSTM(64)**, with a **Dense(13)** softmax output.
+The current deployed model is a Keras **BiLSTM(128)→BiLSTM(64)→LSTM(64)**, with a **Dense(13)** softmax output. 
+The model file `13_class_statement_classification_bilstm.pb` can be downloaded from this repository via [git-lfs](https://git-lfs.github.com/). It is compatible with the rust wrapper for tensorflow and compiled to use a CPU implementation of LSTM, as our demo server has no dedicated GPU.
 
 The input layer is embedded via the [arxmliv 08.2018 GloVe embeddings](https://sigmathling.kwarc.info/resources/arxmliv-embeddings-082018/), as well as padded/truncated to a maximum length of 480 words. 
 A paragraph is hence a fixed `(480,300)` matrix, as passed into the bilstm layer.
