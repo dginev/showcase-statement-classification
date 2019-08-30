@@ -11,6 +11,8 @@ https://corpora.mathweb.org/classify_paragraph
  
 ### Details
 
+For the scientific work behind this showcase, please [read our paper](https://arxiv.org/abs/1908.10993)
+
 The current deployed model is a Keras **BiLSTM(128)→BiLSTM(64)→LSTM(64)**, with a **Dense(13)** softmax output. 
 The model file `13_class_statement_classification_bilstm.pb` can be downloaded from this repository via [git-lfs](https://git-lfs.github.com/). It is compatible with the rust wrapper for tensorflow and compiled to use a CPU implementation of LSTM, as our demo server has no dedicated GPU.
 
@@ -23,10 +25,4 @@ The base rate baseline was 0.38, the frequency of the "proposition" class.
 
 For more experimental details, please see the main [experiment repository](https://github.com/dginev/arxiv-statement-classification).
 
-For practical evaluation, a likelihood threshold could be used, where entries with smaller likelihoods can be considered as an "other" label.
-
-### Notes
-
-*Pending publication*
-
-The server is running a CPU version of the underling `CuDNNLSTM` layers, so expect rather slow runtimes, of 15-20 seconds for the tensorflow stage. It is also not dedicated to serving this showcase, so performance may additionally vary.
+For practical evaluation, a likelihood threshold could be used, where entries with smaller likelihoods (e.g. <0.3) can be considered as an "other" label.
