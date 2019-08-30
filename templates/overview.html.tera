@@ -76,8 +76,9 @@
       were used and reorganized.<br>
       Only the first logical paragraph in each environment was used.
     </p>
-    <p>For practical evaluation, a likelihood threshold could be used, where entries under the specified likelihood
+    <p>For practical evaluation, a likelihood threshold (e.g. <0.3) could be used, where entries under the specified likelihood
       can be considered as an "other" label.</p>
+    <p>For the full experiment details, please see <a href="https://arxiv.org/abs/1908.10993">our paper</a></p>
   </div>
 </div>
 
