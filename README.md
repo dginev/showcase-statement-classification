@@ -1,7 +1,8 @@
 # Showcase for 13-class scientific statement classification
 
-### Preview available at:
-https://corpora.mathweb.org/classify_paragraph
+[![Preprint](https://img.shields.io/badge/Preprint-08.2019-success.svg)](https://arxiv.org/abs/1908.10993)
+[![Dataset](https://img.shields.io/badge/Data-SIGMathLing-blue.svg)](https://sigmathling.kwarc.info/resources/arxmliv-statements-082018/) 
+[![Showcase](https://img.shields.io/badge/Showcase-mathweb.org-orange.svg)](https://corpora.mathweb.org/classify_paragraph)
 
 ### Method
  * [latexml](https://github.com/brucemiller/LaTeXML) converts the source into an HTML5 document
