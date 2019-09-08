@@ -183,7 +183,6 @@ impl LatexmlRequest {
     query.push(("pmml", self.pmml.as_str()));
     query.push(("cmml", self.cmml.as_str()));
     query.push(("mathtex", self.mathtex.as_str()));
-    query.push(("mathlex", self.mathlex.as_str()));
     query.push(("nodefaultresources", &self.nodefaultresources));
     for p in self.preload.iter() {
       query.push(("preload", &p));

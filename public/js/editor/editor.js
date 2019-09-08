@@ -156,7 +156,7 @@ var sendRequest = function (tex, my_counter, onthefly) {
         "mathtex": "",
         "mathlex": "",
         "nodefaultresources": "",
-        "preload": ["LaTeX.pool", "article.cls", "amsmath.sty", "amsthm.sty", "amstext.sty", "amssymb.sty", "eucal.sty", "[dvipsnames]xcolor.sty", "url.sty", "hyperref.sty", "[ids]latexml.sty", "llamapun.sty"]
+        "preload": ["LaTeX.pool", "article.cls", "amsmath.sty", "amsthm.sty", "amstext.sty", "amssymb.sty", "eucal.sty", "[dvipsnames]xcolor.sty", "url.sty", "hyperref.sty", "[ids,mathlexemes]latexml.sty"]
       }),
     }).done(function (data) {
       console.log("success: ", data);
