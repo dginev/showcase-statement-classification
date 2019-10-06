@@ -88,16 +88,18 @@ function setup_message(data) {
   // typeset table, highlight max row
   var classification = "<table class='classification table table-striped'><thead><tr><th>class</th><th>likelihood</th></tr></thead><tbody>";
   $.each(classes, function (idx, key) {
-    if (max_key == key) {
-      tr = '<tr class="success">';
-    } else {
-      tr = '<tr>';
-    }
     var val = data.classification[key];
-    if (val < 0.001) {
-      val = 0.0;
+    if (val != -1) { // skip -1 values, not in this model.
+      if (max_key == key) {
+        tr = '<tr class="success">';
+      } else {
+        tr = '<tr>';
+      }
+      if (val < 0.001) {
+        val = 0.0;
+      }
+      classification += tr + "<td>" + key + "</td><td>" + precise(val) + "</td></tr>";
     }
-    classification += tr + "<td>" + key + "</td><td>" + precise(val) + "</td></tr>";
   });
   classification += "</tbody></table>";
   $('#classification').html(classification);
@@ -138,6 +140,9 @@ var sendRequest = function (tex, my_counter, onthefly) {
       preamble = "literal:" + m[1];
       tex = m[2];
     }
+    model_option = $('#model_select option:selected').first();
+    var model_requested = model_option && model_option.attr("value");
+
     $.ajax({
       type: "POST",
       url: "/process",
@@ -156,6 +161,7 @@ var sendRequest = function (tex, my_counter, onthefly) {
         "mathtex": "",
         "mathlex": "",
         "nodefaultresources": "",
+        "model": model_requested,
         "preload": ["LaTeX.pool", "article.cls", "amsmath.sty", "amsthm.sty", "amstext.sty", "amssymb.sty", "eucal.sty", "[dvipsnames]xcolor.sty", "url.sty", "hyperref.sty", "[ids,mathlexemes]latexml.sty"]
       }),
     }).done(function (data) {
@@ -229,6 +235,7 @@ function example_select_handler() {
   }
 }
 $('#example_select').change(example_select_handler);
+$('#model_select').change(example_select_handler);
 
 
 $('#ltxstyle_select').change(function () {

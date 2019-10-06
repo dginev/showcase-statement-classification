@@ -32,6 +32,10 @@
       <select id="example_select" name="example">
         <option selected="selected" value="">Select Example</option>
       </select>
+      <select id="model_select" name="model">
+        <option selected="selected" value="2018">13 class model, 10.5 million statements</option>
+        <option value="2019">20 class model, 22.1 million statements</option>
+      </select>
     </div>
 
     <div style="background-color: #FFFFFF; display: none;
@@ -76,9 +80,9 @@
       were used and reorganized.<br>
       Only the first logical paragraph in each environment was used.
     </p>
-    <p>For practical evaluation, a likelihood threshold (e.g. <0.3) could be used, where entries under the specified likelihood
-      can be considered as an "other" label.</p>
-    <p>For the full experiment details, please see <a href="https://arxiv.org/abs/1908.10993">our paper</a></p>
+    <p>For practical evaluation, a likelihood threshold (e.g. <0.3) could be used, where entries under the specified
+        likelihood can be considered as an "other" label.</p> <p>For the full experiment details, please see <a
+          href="https://arxiv.org/abs/1908.10993">our paper</a></p>
   </div>
 </div>
 
